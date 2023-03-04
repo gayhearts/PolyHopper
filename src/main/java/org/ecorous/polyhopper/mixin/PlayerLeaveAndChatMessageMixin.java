@@ -4,6 +4,7 @@ import net.minecraft.network.message.SignedChatMessage;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import org.ecorous.polyhopper.MessageHooks;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -25,7 +26,7 @@ public class PlayerLeaveAndChatMessageMixin {
 			)
 	)
 	private void polyhopper$onDisconnected(Text reason, CallbackInfo ci) {
-
+		MessageHooks.INSTANCE.onPlayerDisconnected(player, reason);
 	}
 
 	@Inject(
@@ -36,6 +37,6 @@ public class PlayerLeaveAndChatMessageMixin {
 			)
 	)
 	private void polyhopper$sendChatMessage(SignedChatMessage signedChatMessage, CallbackInfo ci) {
-
+		MessageHooks.INSTANCE.onChatMessageSent(player, signedChatMessage.getContent());
 	}
 }

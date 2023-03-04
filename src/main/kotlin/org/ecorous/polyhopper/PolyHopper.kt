@@ -8,7 +8,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 object PolyHopper : ModInitializer {
-    val MODID: String = "polyhopper"
+    const val MODID: String = "polyhopper"
     @JvmField
     val LOGGER: Logger = LoggerFactory.getLogger("PolyHopper")
     val CONFIG : Config = QuiltConfig.create(MODID, "config", Config::class.java)
