@@ -3,7 +3,10 @@
   "minVersion": "0.8",
   "package": "org.ecorous.polyhopper.mixin",
   "compatibilityLevel": "JAVA_17",
-  "mixins": [],
+  "mixins": [
+    "PlayerJoinMessageMixin",
+    "PlayerLeaveMessageMixin"
+  ],
   "client": [
     "TitleScreenMixin"
   ],
