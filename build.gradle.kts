@@ -22,6 +22,8 @@ repositories {
 	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
 	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 	// for more information about repositories.
+	maven("https://oss.sonatype.org/content/repositories/snapshots")
+	maven("https://s01.oss.sonatype.org/content/repositories/snapshots")
 }
 
 // All the dependencies are declared at gradle/libs.version.toml and referenced with "libs.<id>"
@@ -45,6 +47,7 @@ dependencies {
 	*/
 
 	modImplementation(libs.quilt.loader)
+	implementation(libs.kordex)?.let { include(it) }
 
 
 	// QSL is not a complete API; You will need Quilted Fabric API to fill in the gaps.

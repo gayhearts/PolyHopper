@@ -7,12 +7,14 @@ qkl = "1.1.0+kt.1.8.0+flk.1.9.0"
 loader = "0.17.8"
 mappings = "1.19.3+build.9"
 loom = "1.+"
+kordex = "1.5.6-SNAPSHOT"
 
 [libraries]
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
 qfapi = { module = "org.quiltmc.quilted-fabric-api:quilted-fabric-api", version.ref = "qfapi" }
 qfapi_deprecated = { module = "org.quiltmc.quilted-fabric-api:quilted-fabric-api-deprecated", version.ref = "qfapi" }
 
+kordex = {module = "com.kotlindiscord.kord.extensions:kord-extensions", version.ref="kordex"}
 
 qkl = { module = "org.quiltmc.quilt-kotlin-libraries:quilt-kotlin-libraries", version.ref = "qkl" }
 quilt_loader = { module = "org.quiltmc:quilt-loader", version.ref = "loader" }
