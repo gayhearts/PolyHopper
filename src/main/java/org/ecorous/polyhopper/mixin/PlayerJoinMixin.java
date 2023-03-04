@@ -9,13 +9,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PlayerManager.class)
-public class PlayerJoinMessageMixin {
+public class PlayerJoinMixin {
 
 	@Inject(
 			method = "onPlayerConnect(Lnet/minecraft/network/ClientConnection;Lnet/minecraft/server/network/ServerPlayerEntity;)V",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/server/PlayerManager;m_bgctehjy(Lnet/minecraft/text/Text;Z)V",
+					target = "Lnet/minecraft/server/PlayerManager;broadcastSystemMessage(Lnet/minecraft/text/Text;Z)V",
 					shift = At.Shift.AFTER
 			)
 	)

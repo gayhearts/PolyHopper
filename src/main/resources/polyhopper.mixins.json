@@ -4,8 +4,8 @@
   "package": "org.ecorous.polyhopper.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "PlayerJoinMessageMixin",
-    "PlayerLeaveMessageMixin"
+    "PlayerJoinMixin",
+    "PlayerLeaveAndChatMessageMixin"
   ],
   "client": [
     "TitleScreenMixin"
