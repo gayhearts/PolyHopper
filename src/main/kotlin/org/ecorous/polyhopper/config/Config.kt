@@ -23,7 +23,7 @@ class Config : WrappedConfig() {
         @Comment("How to send messages, can be either:")
         @Comment("  MESSAGE - Simple discord messages.")
         @Comment("  WEBHOOK - Message via webhook with custom name and avatar.")
-        val messageMode : MessageMode = MessageMode.MESSAGE
+        val messageMode : MessageMode = MessageMode.WEBHOOK
 
         @Comment("Announce deaths?")
         val announceDeaths = true
