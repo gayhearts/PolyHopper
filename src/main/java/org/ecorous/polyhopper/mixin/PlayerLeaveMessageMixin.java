@@ -23,7 +23,7 @@ public class PlayerLeaveMessageMixin {
 					shift = At.Shift.AFTER
 			)
 	)
-	private void polyhopper$onDisconnect(Text reason, CallbackInfo ci) {
+	private void polyhopper$onDisconnected(Text reason, CallbackInfo ci) {
 
 	}
 }

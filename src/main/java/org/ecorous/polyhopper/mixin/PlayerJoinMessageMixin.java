@@ -19,7 +19,7 @@ public class PlayerJoinMessageMixin {
 					shift = At.Shift.AFTER
 			)
 	)
-	private void polyhopper$onPlayerConnected(ClientConnection connection, ServerPlayerEntity player, CallbackInfo ci) {
+	private void polyhopper$onPlayerConnect(ClientConnection connection, ServerPlayerEntity player, CallbackInfo ci) {
 
 	}
 }
