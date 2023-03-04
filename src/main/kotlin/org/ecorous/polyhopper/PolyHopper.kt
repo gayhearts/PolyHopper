@@ -9,8 +9,9 @@ import org.slf4j.LoggerFactory
 import java.nio.file.Path
 
 object PolyHopper : ModInitializer {
+    val MODID: String = "polyhopper"
     val LOGGER: Logger = LoggerFactory.getLogger("PolyHopper")
-    val CONFIG : Config = QuiltConfig.create("polyhopper", "bot", Path.of(""), Config::class.java)
+    val CONFIG : Config = QuiltConfig.create(MODID, "config", Config::class.java)
 
     override fun onInitialize(mod: ModContainer) {
 
