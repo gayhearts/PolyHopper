@@ -6,8 +6,9 @@
   "mixins": [
     "PlayerAdvancementMixin",
     "PlayerDeathMixin",
-    "PlayerJoinMixin",
-    "PlayerLeaveAndChatMessageMixin"
+    "PlayerJoinAndCommandMixin",
+    "PlayerLeaveAndChatMessageMixin",
+    "TellRawMixin"
   ],
   "client": [
     "TitleScreenMixin"

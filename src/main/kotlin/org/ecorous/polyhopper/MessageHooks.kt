@@ -41,4 +41,16 @@ object MessageHooks {
         // Example: Player56 said: "Hello World!"
         PolyHopper.LOGGER.info(player.displayName.string + " said: \"${message}\"")
     }
+
+    fun onMeCommand(player: ServerPlayerEntity?, message: String) {
+        PolyHopper.LOGGER.info((player?.displayName?.string ?: "Server") + " /me'd: \"${message}\"")
+    }
+
+    fun onSayCommand(player: ServerPlayerEntity?, message: String) {
+        PolyHopper.LOGGER.info((player?.displayName?.string ?: "Server") + " /say'd: \"${message}\"")
+    }
+
+    fun onTellRaw(player: ServerPlayerEntity?, message: Text) {
+        PolyHopper.LOGGER.info((player?.displayName?.string ?: "Server") + " /tellraw'd: \"${message.string}\"")
+    }
 }
