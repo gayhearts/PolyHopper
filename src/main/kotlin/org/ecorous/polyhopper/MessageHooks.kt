@@ -1,10 +1,16 @@
 package org.ecorous.polyhopper
 
 import net.minecraft.server.network.ServerPlayerEntity
+import net.minecraft.text.Style
 import net.minecraft.text.Text
+import java.lang.StringBuilder
+import java.util.Optional
+import java.util.Random
 
 // Likely temporary, just somewhere to put partial implementations whilst other things are waiting to be worked on e.g. discord bot.
 object MessageHooks {
+    private const val OBFUSCATION_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890"
+
     fun onPlayerDeath(player: ServerPlayerEntity, message: Text) {
         if (PolyHopper.CONFIG.bot.announceDeaths) {
             // Example: Player661 fell from a high place
@@ -51,6 +57,42 @@ object MessageHooks {
     }
 
     fun onTellRaw(player: ServerPlayerEntity?, message: Text) {
-        PolyHopper.LOGGER.info((player?.displayName?.string ?: "Server") + " /tellraw'd: \"${message.string}\"")
+        PolyHopper.LOGGER.info((player?.displayName?.string ?: "Server") + " /tellraw'd: \"${minecraftTextToDiscordMessage(message)}\" (${Text.Serializer.toJson(message)})")
+    }
+
+    private fun discordMessageToMinecraftText(message: String) : Text {
+        TODO()
+    }
+
+    private fun minecraftTextToDiscordMessage(message: Text) : String {
+        val builder = StringBuilder()
+        message.visit({ style, text ->
+            if (style.isUnderlined) builder.append("__")
+            if (style.isBold) builder.append("**")
+            if (style.isItalic) builder.append("*")
+            if (style.isStrikethrough) builder.append("~~")
+            if (style.isObfuscated) {
+                builder.append(obfuscatedMessage(text.length)) // todo: better way to obfuscate text?
+            } else {
+                builder.append(text)
+            }
+            if (style.isStrikethrough) builder.append("~~")
+            if (style.isItalic) builder.append("*")
+            if (style.isBold) builder.append("**")
+            if (style.isUnderlined) builder.append("__")
+
+            return@visit Optional.empty<String>()
+        }, Style.EMPTY)
+
+        return builder.toString()
+    }
+
+    private fun obfuscatedMessage(length: Int) : String {
+        val random = Random()
+        var rv = ""
+        for (i in 0..length) {
+            rv += OBFUSCATION_CHARACTERS[random.nextInt(OBFUSCATION_CHARACTERS.length)]
+        }
+        return rv
     }
 }
