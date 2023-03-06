@@ -17,6 +17,9 @@ class Config : WrappedConfig() {
         @Comment("The channel to limit commands to and where messages are sent.")
         val channelId: String = ""
 
+        @Comment("The guild that the bot is to be used in.")
+        val guildId: String = ""
+
         @Comment("The channel where whitelist are logged")
         val whitelistChannelId: String = ""
 
@@ -36,18 +39,18 @@ class Config : WrappedConfig() {
     }
 
     inner class WebhookSection : Section {
-        @Comment("Url to send messages to, should be in the same channel as bot section above.")
-        val webhookUrl: String = ""
+        @Comment("The name used for webhook messages, can substitute in {username} or {displayName}")
+        val nameFormat: String = "{displayName} @ PolyHopper"
 
-        @Comment("The name used for webhook messages.")
-        val nameFormat: String = "{username} @ PolyHopper"
+        @Comment("The url for player webhook image, can substitute in {uuid} or {username}.")
+        val playerAvatarUrl: String = "https://crafatar.com/renders/head/{uuid}"
 
-        @Comment("The url for webhook image, can substitute in {uuid} or {username}.")
-        val avatarUrl: String = "https://crafatar.com/renders/head/{uuid}"
+        @Comment("The url for server webhook image, can substitute in {uuid} or {username}.")
+        val serverAvatarUrl: String = "https://cdn.ecorous.org/blackhole.png"
     }
 
     inner class MessageSection : Section {
-        @Comment("Format for player messages to take.")
-        val messageFormat: String = "<{username}> {text}"
+        @Comment("Format for player messages to take, can substitute in {username}, {displayName}, or {text}")
+        val messageFormat: String = "<{displayName}> {text}"
     }
 }
