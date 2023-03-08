@@ -25,6 +25,11 @@ object PolyHopper : ModInitializer, CoroutineScope {
             launch {
                 HopperBot.init()
             }
+            MessageHooks.onServerStarted()
+        }
+
+        ServerLifecycleEvents.STOPPED.register {
+            MessageHooks.onServerShutdown()
         }
     }
     override val coroutineContext = Dispatchers.Default

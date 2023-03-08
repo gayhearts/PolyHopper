@@ -60,6 +60,14 @@ object MessageHooks {
         PolyHopper.LOGGER.info((player?.displayName?.string ?: "Server") + " /tellraw'd: \"${minecraftTextToDiscordMessage(message)}\" (${Text.Serializer.toJson(message)})")
     }
 
+    fun onServerStarted() {
+        PolyHopper.LOGGER.info("Server started!")
+    }
+
+    fun onServerShutdown() {
+        PolyHopper.LOGGER.info("Server shutdown!")
+    }
+
     private fun discordMessageToMinecraftText(message: String) : Text {
         TODO()
     }
