@@ -12,6 +12,7 @@ import dev.kord.rest.builder.message.create.embed
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import net.minecraft.text.Text
 import org.ecorous.polyhopper.config.MessageMode
 import org.ecorous.polyhopper.extensions.MainExtension
 import org.quiltmc.qkl.library.brigadier.argument.message
@@ -31,6 +32,11 @@ object HopperBot : CoroutineScope {
 
     fun getAvatarUrl(isPlayer: Boolean, uuid: String = "", username: String = ""): String {
         return if (isPlayer) Utils.getPlayerAvatarUrl(uuid, username) else PolyHopper.CONFIG.webhook.serverAvatarUrl
+    }
+
+    fun sendMinecraftMessage(displayName: String, uuid: String, username: String, text: Text)
+    {
+        sendMessage(MessageHooks.minecraftTextToDiscordMessage(text), username, uuid, displayName)
     }
 
     fun sendEmbed(username: String = "Server", body: EmbedBuilder.() -> Unit) {

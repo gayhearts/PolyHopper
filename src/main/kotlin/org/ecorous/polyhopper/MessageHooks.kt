@@ -1,9 +1,11 @@
 package org.ecorous.polyhopper
 
+import dev.kord.common.Color
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.text.Style
 import net.minecraft.text.Text
 import org.ecorous.polyhopper.HopperBot.sendEmbed
+import org.ecorous.polyhopper.HopperBot.sendMinecraftMessage
 import java.lang.StringBuilder
 import java.util.Optional
 import java.util.Random
@@ -23,6 +25,7 @@ object MessageHooks {
         if (PolyHopper.CONFIG.bot.announceAdvancements) {
             sendEmbed {
                 title = message.string
+                color = Color(0, 255, 0)
             }
             // todo: May want to customize this further using fancy embeds.
             //  e.g. adding hover text as a tag line
@@ -33,6 +36,10 @@ object MessageHooks {
 
     fun onPlayerConnected(player: ServerPlayerEntity) {
         if (PolyHopper.CONFIG.bot.announcePlayerJoinLeave) {
+            sendEmbed {
+                title = player.displayName.string + "has joined"
+                color = Color(0, 255, 0)
+            }
             // Example: Player661 has joined the game.
             PolyHopper.LOGGER.info(player.displayName.string + " has joined the game.")
         }
@@ -40,6 +47,10 @@ object MessageHooks {
 
     fun onPlayerDisconnected(player: ServerPlayerEntity, reason: Text) {
         if (PolyHopper.CONFIG.bot.announcePlayerJoinLeave) {
+            sendEmbed {
+                title = player.displayName.string + "has left"
+                color = Color(255, 0, 0)
+            }
             // todo: do we want to output the reason too?
             //  This can contain ban messages which otherwise aren't shown.
             // Example: Player661 has left the game.
@@ -47,36 +58,57 @@ object MessageHooks {
         }
     }
 
-    fun onChatMessageSent(player: ServerPlayerEntity, message: String) {
+    fun onChatMessageSent(player: ServerPlayerEntity, message: Text) {
+        sendMinecraftMessage(player.displayName.string, player.uuidAsString, player.displayName.string, message)
         // Example: Player56 said: "Hello World!"
         PolyHopper.LOGGER.info(player.displayName.string + " said: \"${message}\"")
     }
 
     fun onMeCommand(player: ServerPlayerEntity?, message: String) {
+        sendEmbed {
+            title = player?.displayName?.string + message
+            color = Color(0, 0, 255)
+        }
         PolyHopper.LOGGER.info((player?.displayName?.string ?: "Server") + " /me'd: \"${message}\"")
     }
 
     fun onSayCommand(player: ServerPlayerEntity?, message: String) {
+        sendEmbed {
+            title = player?.displayName?.string + ": " + message
+            color = Color(0, 0, 255)
+        }
         PolyHopper.LOGGER.info((player?.displayName?.string ?: "Server") + " /say'd: \"${message}\"")
     }
 
     fun onTellRaw(player: ServerPlayerEntity?, message: Text) {
+        sendEmbed {
+            title = player?.displayName?.string + minecraftTextToDiscordMessage(message)
+            color = Color(0, 0, 255)
+        }
         PolyHopper.LOGGER.info((player?.displayName?.string ?: "Server") + " /tellraw'd: \"${minecraftTextToDiscordMessage(message)}\" (${Text.Serializer.toJson(message)})")
     }
 
     fun onServerStarted() {
+        sendEmbed {
+            title = "Server started!"
+            color = Color(0, 255, 0)
+        }
         PolyHopper.LOGGER.info("Server started!")
     }
 
     fun onServerShutdown() {
+        sendEmbed {
+            title = "Server stopped!"
+            color = Color(2556, 0, 0)
+        }
         PolyHopper.LOGGER.info("Server shutdown!")
     }
 
-    private fun discordMessageToMinecraftText(message: String) : Text {
+    fun discordMessageToMinecraftText(message: String) : Text {
         TODO()
     }
 
-    private fun minecraftTextToDiscordMessage(message: Text) : String {
+    fun minecraftTextToDiscordMessage(message: Text) : String {
         val builder = StringBuilder()
         message.visit({ style, text ->
             if (style.isUnderlined) builder.append("__")

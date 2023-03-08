@@ -36,6 +36,6 @@ public class PlayerLeaveAndChatMessageMixin {
 			)
 	)
 	private void polyhopper$sendChatMessage(SignedChatMessage signedChatMessage, CallbackInfo ci) {
-		MessageHooks.INSTANCE.onChatMessageSent(player, signedChatMessage.getContent());
+		MessageHooks.INSTANCE.onChatMessageSent(player, signedChatMessage.getUnsignedContent());
 	}
 }
