@@ -30,6 +30,7 @@ object PolyHopper : ModInitializer, CoroutineScope {
         }
 
         ServerLifecycleEvents.STOPPED.register {
+            server = null
             MessageHooks.onServerShutdown()
         }
     }
