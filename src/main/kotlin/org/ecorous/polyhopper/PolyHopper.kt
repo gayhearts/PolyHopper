@@ -10,7 +10,7 @@ import org.quiltmc.qsl.base.api.entrypoint.ModInitializer
 import org.quiltmc.qsl.lifecycle.api.event.ServerLifecycleEvents
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 object PolyHopper : ModInitializer, CoroutineScope {
     const val MODID: String = "polyhopper"
@@ -22,14 +22,13 @@ object PolyHopper : ModInitializer, CoroutineScope {
     override fun onInitialize(mod: ModContainer) {
         ServerLifecycleEvents.READY.register {
             server = it
-            launch {
+            runBlocking {
                 HopperBot.init()
-                // todo: Should probably change how bot is initialised rather than running this in the coroutine.
-                MessageHooks.onServerStarted()
             }
+            MessageHooks.onServerStarted()
         }
 
-        ServerLifecycleEvents.STOPPED.register {
+        ServerLifecycleEvents.STOPPING.register {
             server = null
             MessageHooks.onServerShutdown()
         }
