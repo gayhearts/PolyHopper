@@ -15,7 +15,6 @@ import kotlinx.coroutines.Dispatchers
 import net.minecraft.text.Text
 import org.ecorous.polyhopper.config.MessageMode
 import org.ecorous.polyhopper.extensions.MainExtension
-import org.quiltmc.qkl.library.brigadier.argument.message
 
 object HopperBot : CoroutineScope {
 

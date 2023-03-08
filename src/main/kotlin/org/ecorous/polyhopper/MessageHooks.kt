@@ -99,7 +99,7 @@ object MessageHooks {
     fun onServerShutdown() {
         sendEmbed {
             title = "Server stopped!"
-            color = Color(2556, 0, 0)
+            color = Color(255, 0, 0)
         }
         PolyHopper.LOGGER.info("Server shutdown!")
     }
