@@ -3,6 +3,7 @@ package org.ecorous.polyhopper
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.text.Style
 import net.minecraft.text.Text
+import org.ecorous.polyhopper.HopperBot.sendEmbed
 import java.lang.StringBuilder
 import java.util.Optional
 import java.util.Random
@@ -20,6 +21,9 @@ object MessageHooks {
 
     fun onAdvancement(player: ServerPlayerEntity, message: Text) {
         if (PolyHopper.CONFIG.bot.announceAdvancements) {
+            sendEmbed {
+                title = message.string
+            }
             // todo: May want to customize this further using fancy embeds.
             //  e.g. adding hover text as a tag line
             // Example: Player661 has completed the challenge [Arbalistic]

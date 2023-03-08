@@ -3,9 +3,12 @@ package org.ecorous.polyhopper
 import com.kotlindiscord.kord.extensions.ExtensibleBot
 import com.kotlindiscord.kord.extensions.utils.ensureWebhook
 import dev.kord.common.entity.Snowflake
+import dev.kord.core.behavior.channel.createEmbed
 import dev.kord.core.behavior.execute
 import dev.kord.core.entity.channel.MessageChannel
 import dev.kord.core.entity.channel.TextChannel
+import dev.kord.rest.builder.message.EmbedBuilder
+import dev.kord.rest.builder.message.create.embed
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -30,7 +33,23 @@ object HopperBot : CoroutineScope {
         return if (isPlayer) Utils.getPlayerAvatarUrl(uuid, username) else PolyHopper.CONFIG.webhook.serverAvatarUrl
     }
 
-
+    fun sendEmbed(username: String = "Server", body: EmbedBuilder.() -> Unit) {
+        launch {
+            if (PolyHopper.CONFIG.bot.messageMode == MessageMode.MESSAGE) {
+                bot.kordRef.getChannelOf<MessageChannel>(Snowflake(PolyHopper.CONFIG.bot.channelId))?.createEmbed(body)
+            } else if (PolyHopper.CONFIG.bot.messageMode == MessageMode.WEBHOOK) {
+                var webhook = bot.kordRef.getChannelOf<TextChannel>(Snowflake(PolyHopper.CONFIG.bot.channelId))
+                    ?.let { ensureWebhook(it, Utils.getWebhookUsername("Server", "Server")) }
+                webhook!!.token?.let {
+                    webhook.execute(it) {
+                        this.avatarUrl = getAvatarUrl(false)
+                        if (username != "") this.username = Utils.getWebhookUsername(username, username)
+                        embed(body)
+                    }
+                }
+            }
+        }
+    }
     fun sendMessage(message: String, username: String = "", uuid: String = "", displayName: String = "", avatarUrl: String = "") {
         launch {
             if (PolyHopper.CONFIG.bot.messageMode == MessageMode.MESSAGE) {
@@ -40,7 +59,7 @@ object HopperBot : CoroutineScope {
                     ?.let { ensureWebhook(it, Utils.getWebhookUsername("Server", "Server")) }
                 webhook!!.token?.let {
                     webhook.execute(it) {
-                        this.avatarUrl = getAvatarUrl((username != "" || displayName != "" || uuid != ""), username, uuid) // THIS WILL NOT WORK. FIND OUT HOW TO CONVERT USERNAME TO UUID AND THEN PASS USERNAME + UUID
+                        this.avatarUrl = getAvatarUrl((username != "" || displayName != "" || uuid != ""), username, uuid)
                         if (username != "" || displayName != "" || uuid != "") this.username = Utils.getWebhookUsername(displayName, username)
                         content = message
                     }
