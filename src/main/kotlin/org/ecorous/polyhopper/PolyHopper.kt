@@ -24,8 +24,9 @@ object PolyHopper : ModInitializer, CoroutineScope {
             server = it
             launch {
                 HopperBot.init()
+                // todo: Should probably change how bot is initialised rather than running this in the coroutine.
+                MessageHooks.onServerStarted()
             }
-            MessageHooks.onServerStarted()
         }
 
         ServerLifecycleEvents.STOPPED.register {

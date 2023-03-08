@@ -47,7 +47,35 @@ dependencies {
 	*/
 
 	modImplementation(libs.quilt.loader)
-	implementation(libs.kordex)?.let { include(it) }
+	implementation(libs.kordex)
+	include(libs.kordex)
+	// todo: turn these into bundles & use libs.versions.toml
+	include("io.github.microutils:kotlin-logging-jvm:2.1.23")
+	include("dev.kord.cache:cache-api:0.3.0")
+	include("dev.kord.cache:cache-map:0.3.0")
+	include("dev.kord:kord-core:0.8.x-SNAPSHOT")
+	include("dev.kord:kord-common:0.8.x-SNAPSHOT")
+	include("dev.kord:kord-gateway:0.8.x-SNAPSHOT")
+	include("dev.kord:kord-rest:0.8.x-SNAPSHOT")
+	include("io.insert-koin:koin-core-jvm:3.3.2")
+	include("io.insert-koin:koin-logger-slf4j:3.3.0")
+	include("io.ktor:ktor-client-cio-jvm:2.2.4")
+	include("io.ktor:ktor-client-content-negotiation-jvm:2.2.4")
+	include("io.ktor:ktor-client-core-jvm:2.2.4")
+	include("io.ktor:ktor-client-websockets-jvm:2.2.4")
+	include("io.ktor:ktor-events-jvm:2.2.4")
+	include("io.ktor:ktor-http-cio-jvm:2.2.4")
+	include("io.ktor:ktor-http-jvm:2.2.4")
+	include("io.ktor:ktor-io-jvm:2.2.4")
+	include("io.ktor:ktor-network-jvm:2.2.4")
+	include("io.ktor:ktor-network-tls-jvm:2.2.4")
+	include("io.ktor:ktor-serialization-jvm:2.2.4")
+	include("io.ktor:ktor-serialization-kotlinx-json-jvm:2.2.4")
+	include("io.ktor:ktor-serialization-kotlinx-jvm:2.2.4")
+	include("io.ktor:ktor-utils-jvm:2.2.4")
+	include("io.ktor:ktor-websocket-serialization-jvm:2.2.4")
+	include("io.ktor:ktor-websockets-jvm:2.2.4")
+	include("org.pf4j:pf4j:3.8.0")
 
 
 	// QSL is not a complete API; You will need Quilted Fabric API to fill in the gaps.
