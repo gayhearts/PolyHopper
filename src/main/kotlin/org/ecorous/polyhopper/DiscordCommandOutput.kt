@@ -5,18 +5,18 @@ import net.minecraft.text.Text
 
 class DiscordCommandOutput : CommandOutput {
     override fun sendSystemMessage(message: Text?) {
-
+        message?.let { MessageHooks.minecraftTextToDiscordMessage(it) }?.let { HopperBot.sendMessage(it, "Command Output", "", "Command Output") }
     }
 
     override fun shouldReceiveFeedback(): Boolean {
-        TODO("Not yet implemented")
+        return true
     }
 
     override fun shouldTrackOutput(): Boolean {
-        TODO("Not yet implemented")
+        return true
     }
 
     override fun shouldBroadcastConsoleToOps(): Boolean {
-        TODO("Not yet implemented")
+        return true
     }
 }

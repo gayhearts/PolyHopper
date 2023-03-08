@@ -65,8 +65,8 @@ object HopperBot : CoroutineScope {
                     ?.let { ensureWebhook(it, Utils.getWebhookUsername("Server", "Server")) }
                 webhook!!.token?.let {
                     webhook.execute(it) {
-                        this.avatarUrl = getAvatarUrl((username != "" || displayName != "" || uuid != ""), username, uuid)
-                        if (username != "" || displayName != "" || uuid != "") this.username = Utils.getWebhookUsername(displayName, username)
+                        this.avatarUrl = getAvatarUrl(((username != "" || displayName != "") && uuid != ""), username, uuid)
+                        if (username != "" || displayName != "") this.username = Utils.getWebhookUsername(displayName, username)
                         content = message
                     }
                 }

@@ -13,6 +13,10 @@ import dev.kord.common.entity.Permission
 import dev.kord.common.entity.Snowflake
 import dev.kord.rest.builder.message.create.embed
 import net.minecraft.server.command.ServerCommandSource
+import net.minecraft.text.Text
+import net.minecraft.util.math.Vec2f
+import net.minecraft.util.math.Vec3d
+import org.ecorous.polyhopper.DiscordCommandOutput
 import org.ecorous.polyhopper.PolyHopper
 
 @OptIn(KordPreview::class)
@@ -34,7 +38,17 @@ class MainExtension : Extension() {
                         }
                     }
                 } else {
-                    val source: ServerCommandSource = PolyHopper.server!!.commandSource
+                    val source = ServerCommandSource(
+                        DiscordCommandOutput(),
+                        Vec3d.ZERO,
+                        Vec2f.ZERO,
+                        PolyHopper.server!!.overworld,
+                        0,
+                        "Discord (${user.asUser().username})",
+                        Text.of("Discord (${user.asUser().username})"),
+                        PolyHopper.server!!,
+                        null
+                    )
                     PolyHopper.server!!.commandManager.executePrefixedCommand(source, arguments.command)
 
                 }
