@@ -47,8 +47,10 @@ dependencies {
 	*/
 
 	modImplementation(libs.quilt.loader)
-	implementation(libs.kordex)
-	include(libs.kordex)
+	implementation(libs.kordex.core)
+	include(libs.kordex.core)
+	implementation(libs.kordex.pluralkit)
+	include(libs.kordex.pluralkit)
 	// todo: turn these into bundles & use libs.versions.toml
 	include("io.github.microutils:kotlin-logging-jvm:2.1.23")
 	include("dev.kord.cache:cache-api:0.3.0")

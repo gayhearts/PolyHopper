@@ -14,7 +14,8 @@ minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
 qfapi = { module = "org.quiltmc.quilted-fabric-api:quilted-fabric-api", version.ref = "qfapi" }
 qfapi_deprecated = { module = "org.quiltmc.quilted-fabric-api:quilted-fabric-api-deprecated", version.ref = "qfapi" }
 
-kordex = {module = "com.kotlindiscord.kord.extensions:kord-extensions", version.ref="kordex"}
+kordex_core = {module = "com.kotlindiscord.kord.extensions:kord-extensions", version.ref="kordex"}
+kordex_pluralkit = {module = "com.kotlindiscord.kord.extensions:extra-pluralkit", version.ref="kordex"}
 
 qkl = { module = "org.quiltmc.quilt-kotlin-libraries:quilt-kotlin-libraries", version.ref = "qkl" }
 quilt_loader = { module = "org.quiltmc:quilt-loader", version.ref = "loader" }

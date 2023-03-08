@@ -1,6 +1,7 @@
 package org.ecorous.polyhopper
 
 import com.kotlindiscord.kord.extensions.ExtensibleBot
+import com.kotlindiscord.kord.extensions.modules.extra.pluralkit.extPluralKit
 import com.kotlindiscord.kord.extensions.utils.ensureWebhook
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.behavior.channel.createEmbed
@@ -24,6 +25,7 @@ object HopperBot : CoroutineScope {
         val token = PolyHopper.CONFIG.bot.token
         bot = ExtensibleBot(token) {
             extensions {
+                extPluralKit()
                 add(::MainExtension)
             }
         }
