@@ -64,6 +64,17 @@ dependencies {
 }
 
 val includeBlacklist = setOf<String>(
+	"commons-validator:commons-validator",
+	"commons-beanutils:commons-beanutils",
+	"commons-logging:commons-logging",
+	"commons-collections:commons-collections",
+	"commons-digester:commons-digester",
+	"org.jetbrains:annotations",
+	"org.jetbrains.kotlin:kotlin-stdlib",
+	"org.jetbrains.kotlin:kotlin-stdlib-common",
+	"org.jetbrains.kotlin:kotlin-stdlib-jdk7",
+	"org.jetbrains.kotlin:kotlin-stdlib-jdk8",
+	"org.slf4j:slf4j-api"
 )
 
 afterEvaluate {
@@ -81,9 +92,11 @@ afterEvaluate {
 	}
 
 	mavenCoords.filter { !ignoredModules.contains("${it.group}:${it.module}") }
+		.filter { !includeBlacklist.contains("${it.group}:${it.module}") }
 		.map { "${it.group}:${it.module}:${it.version}" }
-		.filter { !includeBlacklist.contains(it) }
-		.forEach { project.dependencies.include(it) }
+		.forEach {
+			project.dependencies.include(it)
+		}
 }
 
 tasks {
