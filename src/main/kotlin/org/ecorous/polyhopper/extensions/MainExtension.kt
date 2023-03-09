@@ -5,6 +5,7 @@ import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
 import com.kotlindiscord.kord.extensions.extensions.event
+import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
 import com.kotlindiscord.kord.extensions.modules.extra.pluralkit.events.ProxiedMessageCreateEvent
 import com.kotlindiscord.kord.extensions.modules.extra.pluralkit.events.UnProxiedMessageCreateEvent
 import com.kotlindiscord.kord.extensions.types.respond
@@ -40,16 +41,12 @@ class MainExtension : Extension() {
                         }
                     }
                 } else {
-                    // todo: something here is broken
-                    //   Command Output @ PolyHopper — Today at 22:02
-                    //     Unknown or incomplete command, see below for error
-                    //     say Hello World<--[HERE]
                     val source = ServerCommandSource(
                         DiscordCommandOutput(),
                         Vec3d.ZERO,
                         Vec2f.ZERO,
                         PolyHopper.server!!.overworld,
-                        0,
+                        4,
                         "Discord (${user.asUser().username})",
                         Text.of("Discord (${user.asUser().username})"),
                         PolyHopper.server!!,
@@ -74,30 +71,58 @@ class MainExtension : Extension() {
             }
         }
 
+        publicSlashCommand {
+            guild(Snowflake(PolyHopper.CONFIG.bot.guildId))
+            name = "list"
+            description = "Lists online players."
+            action {
+                var stringBuilder = StringBuilder()
+                val playerManager = PolyHopper.server!!.playerManager
+                for (entity in playerManager.playerList) {
+                    stringBuilder.append(entity.displayName.string)
+                }
+                respond {
+                    embed {
+                        title = "List of online players (${playerManager.currentPlayerCount}/${playerManager.maxPlayerCount})"
+                        description = stringBuilder.toString()
+                    }
+                }
+            }
+        }
+
         // todo: Should definitely clean these up and improve implementation like converting discord message to minecraft text.
         event<ProxiedMessageCreateEvent> {
             action {
-                val server = PolyHopper.server!!
-                server.execute {
-                    // note: display name doesn't include system tag.
-                    server.playerManager.broadcastSystemMessage(Text.literal("PolyHopper - <${event.pkMessage.member?.displayName ?: "???"}> ${event.message.content}"), false)
+                if (event.message.channel.id == Snowflake(PolyHopper.CONFIG.bot.channelId)) {
+                    val server = PolyHopper.server!!
+                    server.execute {
+                        // note: display name doesn't include system tag.
+                        server.playerManager.broadcastSystemMessage(
+                            Text.literal("PolyHopper - <${event.pkMessage.member?.displayName ?: "???"}> ${event.message.content}"),
+                            false
+                        )
+                    }
                 }
             }
         }
 
         event<UnProxiedMessageCreateEvent> {
             action {
-                val author : Member? = event.author
-                if (author != null && !author.isBot) {
-                    val server = PolyHopper.server!!
-                    server.execute {
-                        server.playerManager.broadcastSystemMessage(Text.literal("PolyHopper - <${author.displayName}> ${event.message.content}"), false)
+                if (event.message.channel.id == Snowflake(PolyHopper.CONFIG.bot.channelId)) {
+                    val author: Member? = event.author
+                    if (author != null && !author.isBot) {
+                        val server = PolyHopper.server!!
+                        server.execute {
+                            server.playerManager.broadcastSystemMessage(
+                                Text.literal("PolyHopper - <${author.displayName}> ${event.message.content}"),
+                                false
+                            )
+                        }
                     }
                 }
             }
         }
     }
-
     inner class RunArgs : Arguments() {
         val command by string {
             name = "command"

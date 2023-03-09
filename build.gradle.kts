@@ -52,6 +52,12 @@ dependencies {
 	implementation(libs.kordex.pluralkit)
 	include(libs.kordex.pluralkit)
 	// todo: turn these into bundles & use libs.versions.toml
+	include("org.jetbrains.kotlinx:kotlinx-serialization-cbor-jvm:1.5.0")
+	include("org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.5.0")
+	include("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.5.0")
+	include("io.sentry:sentry:6.11.0")
+	include("net.peanuuutz:tomlkt-jvm:0.1.7")
+	include("com.ibm.icu:icu4j:72.1")
 	include("io.github.microutils:kotlin-logging-jvm:2.1.23")
 	include("dev.kord.cache:cache-api:0.3.0")
 	include("dev.kord.cache:cache-map:0.3.0")

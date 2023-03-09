@@ -16,6 +16,10 @@ object MessageHooks {
 
     fun onPlayerDeath(player: ServerPlayerEntity, message: Text) {
         if (PolyHopper.CONFIG.bot.announceDeaths) {
+            sendEmbed {
+                title = message.string
+                color = Color(255, 0, 0)
+            }
             // Example: Player661 fell from a high place
             PolyHopper.LOGGER.info(message.string)
         }
@@ -37,7 +41,7 @@ object MessageHooks {
     fun onPlayerConnected(player: ServerPlayerEntity) {
         if (PolyHopper.CONFIG.bot.announcePlayerJoinLeave) {
             sendEmbed {
-                title = player.displayName.string + "has joined"
+                title = player.displayName.string + " has joined the game"
                 color = Color(0, 255, 0)
             }
             // Example: Player661 has joined the game.
@@ -48,7 +52,7 @@ object MessageHooks {
     fun onPlayerDisconnected(player: ServerPlayerEntity, reason: Text) {
         if (PolyHopper.CONFIG.bot.announcePlayerJoinLeave) {
             sendEmbed {
-                title = player.displayName.string + "has left"
+                title = player.displayName.string + " has left the game"
                 color = Color(255, 0, 0)
             }
             // todo: do we want to output the reason too?
@@ -66,7 +70,7 @@ object MessageHooks {
 
     fun onMeCommand(player: ServerPlayerEntity?, message: String) {
         sendEmbed {
-            title = player?.displayName?.string + message
+            title = player?.displayName?.string + " " + message
             color = Color(0, 0, 255)
         }
         PolyHopper.LOGGER.info((player?.displayName?.string ?: "Server") + " /me'd: \"${message}\"")
@@ -74,7 +78,7 @@ object MessageHooks {
 
     fun onSayCommand(player: ServerPlayerEntity?, message: String) {
         sendEmbed {
-            title = player?.displayName?.string + ": " + message
+            title = (player?.displayName?.string ?: "Server") + ": " + message
             color = Color(0, 0, 255)
         }
         PolyHopper.LOGGER.info((player?.displayName?.string ?: "Server") + " /say'd: \"${message}\"")
@@ -82,7 +86,7 @@ object MessageHooks {
 
     fun onTellRaw(player: ServerPlayerEntity?, message: Text) {
         sendEmbed {
-            title = player?.displayName?.string + minecraftTextToDiscordMessage(message)
+            title = minecraftTextToDiscordMessage(message) // we don't want to say who did it!
             color = Color(0, 0, 255)
         }
         PolyHopper.LOGGER.info((player?.displayName?.string ?: "Server") + " /tellraw'd: \"${minecraftTextToDiscordMessage(message)}\" (${Text.Serializer.toJson(message)})")

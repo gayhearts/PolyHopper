@@ -29,9 +29,11 @@ object HopperBot : CoroutineScope {
                 add(::MainExtension)
             }
         }
+
     }
 
     fun getAvatarUrl(isPlayer: Boolean, uuid: String = "", username: String = ""): String {
+        if (isPlayer) PolyHopper.LOGGER.info(Utils.getPlayerAvatarUrl(uuid, username))
         return if (isPlayer) Utils.getPlayerAvatarUrl(uuid, username) else PolyHopper.CONFIG.webhook.serverAvatarUrl
     }
 
@@ -66,7 +68,7 @@ object HopperBot : CoroutineScope {
                     ?.let { ensureWebhook(it, Utils.getWebhookUsername("Server", "Server")) }
                 webhook!!.token?.let {
                     webhook.execute(it) {
-                        this.avatarUrl = getAvatarUrl(((username != "" || displayName != "") && uuid != ""), username, uuid)
+                        this.avatarUrl = getAvatarUrl(((username != "" || displayName != "") && uuid != ""), uuid, username)
                         if (username != "" || displayName != "") this.username = Utils.getWebhookUsername(displayName, username)
                         content = message
                     }
