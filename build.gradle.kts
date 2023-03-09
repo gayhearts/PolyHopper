@@ -26,9 +26,8 @@ repositories {
 	maven("https://s01.oss.sonatype.org/content/repositories/snapshots")
 }
 
-configurations {
-	create("transitiveInclude")
-}
+
+val transitiveInclude: Configuration by configurations.creating
 
 // All the dependencies are declared at gradle/libs.version.toml and referenced with "libs.<id>"
 // See https://docs.gradle.org/current/userguide/platforms.html for information on how version catalogs work.
@@ -52,9 +51,9 @@ dependencies {
 
 	modImplementation(libs.quilt.loader)
 	implementation(libs.kordex.core)
-	@Suppress("UnstableApiUsage") "transitiveInclude"(libs.kordex.core)
+	@Suppress("UnstableApiUsage") transitiveInclude(libs.kordex.core)
 	implementation(libs.kordex.pluralkit)
-	@Suppress("UnstableApiUsage") "transitiveInclude"(libs.kordex.pluralkit)
+	@Suppress("UnstableApiUsage") transitiveInclude(libs.kordex.pluralkit)
 
 	// QSL is not a complete API; You will need Quilted Fabric API to fill in the gaps.
 	// Quilted Fabric API will automatically pull in the correct QSL version.
