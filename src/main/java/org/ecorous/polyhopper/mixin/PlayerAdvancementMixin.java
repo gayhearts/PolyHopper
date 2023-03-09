@@ -27,7 +27,7 @@ public class PlayerAdvancementMixin {
 	private void polyhopper$grantCriterion(Advancement advancement, String criterionName, CallbackInfoReturnable<Boolean> cir) {
 		if (advancement.getDisplay() != null && advancement.getDisplay().shouldAnnounceToChat()) {
 			Text advancementMessage = Text.translatable("chat.type.advancement." + advancement.getDisplay().getFrame().getId(), owner.getDisplayName(), advancement.toHoverableText());
-			MessageHooks.INSTANCE.onAdvancement(owner, advancementMessage);
+			MessageHooks.INSTANCE.onAdvancement(owner, advancementMessage, advancement.getDisplay().getDescription());
 		}
 	}
 }

@@ -25,7 +25,7 @@ public class PlayerLeaveAndChatMessageMixin {
 			)
 	)
 	private void polyhopper$onDisconnected(Text reason, CallbackInfo ci) {
-		MessageHooks.INSTANCE.onPlayerDisconnected(player, reason);
+		MessageHooks.INSTANCE.onPlayerDisconnected(player);
 	}
 
 	@Inject(
