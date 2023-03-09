@@ -18,6 +18,8 @@ import dev.kord.core.behavior.channel.createEmbed
 import dev.kord.core.entity.Member
 import dev.kord.core.entity.channel.MessageChannel
 import dev.kord.rest.builder.message.create.embed
+import kotlinx.coroutines.runBlocking
+import net.minecraft.server.MinecraftServer
 import net.minecraft.server.WhitelistEntry
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.text.Text
@@ -25,7 +27,6 @@ import net.minecraft.util.math.Vec2f
 import net.minecraft.util.math.Vec3d
 import org.ecorous.polyhopper.DiscordCommandOutput
 import org.ecorous.polyhopper.PolyHopper
-import org.ecorous.polyhopper.Utils
 import org.ecorous.polyhopper.Utils.getInGameMessage
 import java.util.*
 
@@ -98,29 +99,63 @@ class MainExtension : Extension() {
         }
 
         if (PolyHopper.CONFIG.bot.whitelistCommand) {
-            publicSlashCommand(::WhitelistArgs) {
+            ephemeralSlashCommand(::WhitelistArgs) {
                 guild(Snowflake(PolyHopper.CONFIG.bot.guildId))
                 name = "whitelist"
                 description = "Whitelists a user."
                 action {
-                    val playerManager = PolyHopper.server!!.playerManager
-                    playerManager.whitelist.add(WhitelistEntry(GameProfile(UUID.fromString(arguments.user), arguments.user)))
-                    if (PolyHopper.CONFIG.bot.whitelistChannelId != "") {
-                        val channel = bot.kordRef.getChannelOf<MessageChannel>(Snowflake(PolyHopper.CONFIG.bot.whitelistChannelId))!!
-                        channel.createEmbed {
-                            title = "User whitelisted!"
-                            field {
-                                name = "Minecraft User"
-                                value = arguments.user
+                    val server: MinecraftServer = PolyHopper.server!!
+                    server.execute {
+                        val playerByUsername: Optional<GameProfile> = server.userCache.findByName(arguments.user)
+                        val playerManager = server.playerManager
+                        var whitelisted = false
+
+                        if (playerByUsername.isPresent) {
+                            val gameProfile = playerByUsername.get()
+                            if (!playerManager.whitelist.isAllowed(gameProfile)) {
+                                playerManager.whitelist.add(WhitelistEntry(gameProfile))
+                                whitelisted = true
                             }
-                            field {
-                                name = "Discord User"
-                                value = "${user.mention} (${user.id})"
+                        } else {
+                            try {
+                                val gameProfile = GameProfile(UUID.fromString(arguments.user), null)
+                                if (!playerManager.whitelist.isAllowed(gameProfile)) {
+                                    playerManager.whitelist.add(WhitelistEntry(gameProfile))
+                                }
+                                whitelisted = true
+                            } catch (_: IllegalArgumentException) {
+
                             }
                         }
-                    }
-                    respond {
-                        content = "Whitelisted ${arguments.user}."
+                        if (whitelisted) {
+                            if (PolyHopper.CONFIG.bot.whitelistChannelId != "") {
+                                runBlocking {
+                                    val channel = bot.kordRef.getChannelOf<MessageChannel>(Snowflake(PolyHopper.CONFIG.bot.whitelistChannelId))!!
+                                    channel.createEmbed {
+                                        title = "User whitelisted!"
+                                        field {
+                                            name = "Minecraft User"
+                                            value = arguments.user
+                                        }
+                                        field {
+                                            name = "Discord User"
+                                            value = "${user.mention} (${user.id})"
+                                        }
+                                    }
+                                }
+                            }
+                            runBlocking {
+                                respond {
+                                    content = "Whitelisted ${arguments.user}."
+                                }
+                            }
+                        } else {
+                            runBlocking {
+                                respond {
+                                    content = "Failed to whitelist."
+                                }
+                            }
+                        }
                     }
                 }
             }
