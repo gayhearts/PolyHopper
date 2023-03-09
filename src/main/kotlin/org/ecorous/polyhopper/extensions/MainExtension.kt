@@ -24,6 +24,7 @@ import org.ecorous.polyhopper.PolyHopper
 @OptIn(KordPreview::class)
 class MainExtension : Extension() {
     override val name: String = "main"
+    private val channelId: Snowflake = Snowflake(PolyHopper.CONFIG.bot.channelId)
     override suspend fun setup() {
 
         ephemeralSlashCommand(::RunArgs) {
@@ -77,21 +78,25 @@ class MainExtension : Extension() {
         // todo: Should definitely clean these up and improve implementation like converting discord message to minecraft text.
         event<ProxiedMessageCreateEvent> {
             action {
-                val server = PolyHopper.server!!
-                server.execute {
-                    // note: display name doesn't include system tag.
-                    server.playerManager.broadcastSystemMessage(Text.literal("PolyHopper - <${event.pkMessage.member?.displayName ?: "???"}> ${event.message.content}"), false)
+                if (event.message.channelId == channelId) {
+                    val server = PolyHopper.server!!
+                    server.execute {
+                        // note: display name doesn't include system tag.
+                        server.playerManager.broadcastSystemMessage(Text.literal("PolyHopper - <${event.pkMessage.member?.displayName ?: "???"}> ${event.message.content}"), false)
+                    }
                 }
             }
         }
 
         event<UnProxiedMessageCreateEvent> {
             action {
-                val author : Member? = event.author
-                if (author != null && !author.isBot) {
-                    val server = PolyHopper.server!!
-                    server.execute {
-                        server.playerManager.broadcastSystemMessage(Text.literal("PolyHopper - <${author.displayName}> ${event.message.content}"), false)
+                if (event.message.channelId == channelId) {
+                    val author : Member? = event.author
+                    if (author != null && !author.isBot) {
+                        val server = PolyHopper.server!!
+                        server.execute {
+                            server.playerManager.broadcastSystemMessage(Text.literal("PolyHopper - <${author.displayName}> ${event.message.content}"), false)
+                        }
                     }
                 }
             }
