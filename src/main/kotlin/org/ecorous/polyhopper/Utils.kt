@@ -1,5 +1,7 @@
 package org.ecorous.polyhopper
 
+import net.minecraft.text.Text
+
 object Utils {
     fun getWebhookUsername(displayName: String, username: String): String {
         return PolyHopper.CONFIG.webhook.nameFormat
@@ -18,5 +20,13 @@ object Utils {
                                                       .replace("{username}", username)
                                                       .replace("{displayName}", displayName)
                                                       .replace("{text}", content)
+    }
+
+
+    fun getInGameMessage(message: String, username: String): String {
+        return PolyHopper.CONFIG.bot.ingameFormat
+            .replace("{username}", username)
+            .replace("{message}", message) // replace with `.replace("{message}", discordMessageToMinecraftText(message))` when said method is done
+
     }
 }

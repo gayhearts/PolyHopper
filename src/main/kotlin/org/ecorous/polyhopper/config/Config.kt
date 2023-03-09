@@ -20,8 +20,14 @@ class Config : WrappedConfig() {
         @Comment("The guild that the bot is to be used in.")
         val guildId: String = ""
 
+        @Comment("The format that discord messages use in-game")
+        val ingameFormat: String = "[PolyHopper] <{username}> {message}"
+
         @Comment("The channel where whitelist are logged")
         val whitelistChannelId: String = ""
+
+        @Comment("Toggle whitelist command")
+        val whitelistCommand: Boolean = false
 
         @Comment("How to send messages, can be either:")
         @Comment("  MESSAGE - Simple discord messages.")

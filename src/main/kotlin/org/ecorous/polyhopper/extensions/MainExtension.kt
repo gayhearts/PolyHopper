@@ -9,18 +9,25 @@ import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
 import com.kotlindiscord.kord.extensions.modules.extra.pluralkit.events.ProxiedMessageCreateEvent
 import com.kotlindiscord.kord.extensions.modules.extra.pluralkit.events.UnProxiedMessageCreateEvent
 import com.kotlindiscord.kord.extensions.types.respond
+import com.mojang.authlib.GameProfile
 import dev.kord.common.Color
 import dev.kord.common.annotation.KordPreview
 import dev.kord.common.entity.Permission
 import dev.kord.common.entity.Snowflake
+import dev.kord.core.behavior.channel.createEmbed
 import dev.kord.core.entity.Member
+import dev.kord.core.entity.channel.MessageChannel
 import dev.kord.rest.builder.message.create.embed
+import net.minecraft.server.WhitelistEntry
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.text.Text
 import net.minecraft.util.math.Vec2f
 import net.minecraft.util.math.Vec3d
 import org.ecorous.polyhopper.DiscordCommandOutput
 import org.ecorous.polyhopper.PolyHopper
+import org.ecorous.polyhopper.Utils
+import org.ecorous.polyhopper.Utils.getInGameMessage
+import java.util.*
 
 @OptIn(KordPreview::class)
 class MainExtension : Extension() {
@@ -90,6 +97,35 @@ class MainExtension : Extension() {
             }
         }
 
+        if (PolyHopper.CONFIG.bot.whitelistCommand) {
+            publicSlashCommand(::WhitelistArgs) {
+                guild(Snowflake(PolyHopper.CONFIG.bot.guildId))
+                name = "whitelist"
+                description = "Whitelists a user."
+                action {
+                    val playerManager = PolyHopper.server!!.playerManager
+                    playerManager.whitelist.add(WhitelistEntry(GameProfile(UUID.fromString(arguments.user), arguments.user)))
+                    if (PolyHopper.CONFIG.bot.whitelistChannelId != "") {
+                        val channel = bot.kordRef.getChannelOf<MessageChannel>(Snowflake(PolyHopper.CONFIG.bot.whitelistChannelId))!!
+                        channel.createEmbed {
+                            title = "User whitelisted!"
+                            field {
+                                name = "Minecraft User"
+                                value = arguments.user
+                            }
+                            field {
+                                name = "Discord User"
+                                value = "${user.mention} (${user.id})"
+                            }
+                        }
+                    }
+                    respond {
+                        content = "Whitelisted ${arguments.user}."
+                    }
+                }
+            }
+        }
+
         // todo: Should definitely clean these up and improve implementation like converting discord message to minecraft text.
         event<ProxiedMessageCreateEvent> {
             action {
@@ -98,7 +134,10 @@ class MainExtension : Extension() {
                     server.execute {
                         // note: display name doesn't include system tag.
                         server.playerManager.broadcastSystemMessage(
-                            Text.literal("PolyHopper - <${event.pkMessage.member?.displayName ?: "???"}> ${event.message.content}"),
+                            //Text.literal("PolyHopper - <${event.pkMessage.member?.displayName ?: "???"}> ${event.message.content}"),
+                            Text.literal(event.pkMessage.member?.displayName?.let {
+                                getInGameMessage(event.message.content, it)
+                            }),
                             false
                         )
                     }
@@ -114,7 +153,7 @@ class MainExtension : Extension() {
                         val server = PolyHopper.server!!
                         server.execute {
                             server.playerManager.broadcastSystemMessage(
-                                Text.literal("PolyHopper - <${author.displayName}> ${event.message.content}"),
+                                Text.literal(getInGameMessage(event.message.content, author.displayName)),
                                 false
                             )
                         }
@@ -127,6 +166,13 @@ class MainExtension : Extension() {
         val command by string {
             name = "command"
             description = "Command to run."
+        }
+    }
+
+    inner class WhitelistArgs : Arguments() {
+        val user by string {
+            name = "user"
+            description = "User to whitelist."
         }
     }
 }
