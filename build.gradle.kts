@@ -26,6 +26,10 @@ repositories {
 	maven("https://s01.oss.sonatype.org/content/repositories/snapshots")
 }
 
+configurations {
+	create("transitiveInclude")
+}
+
 // All the dependencies are declared at gradle/libs.version.toml and referenced with "libs.<id>"
 // See https://docs.gradle.org/current/userguide/platforms.html for information on how version catalogs work.
 dependencies {
@@ -48,37 +52,9 @@ dependencies {
 
 	modImplementation(libs.quilt.loader)
 	implementation(libs.kordex.core)
-	include(libs.kordex.core)
+	@Suppress("UnstableApiUsage") "transitiveInclude"(libs.kordex.core)
 	implementation(libs.kordex.pluralkit)
-	include(libs.kordex.pluralkit)
-	// todo: turn these into bundles & use libs.versions.toml
-	include("io.github.microutils:kotlin-logging-jvm:2.1.23")
-	include("dev.kord.cache:cache-api:0.3.0")
-	include("dev.kord.cache:cache-map:0.3.0")
-	include("dev.kord:kord-core:0.8.x-SNAPSHOT")
-	include("dev.kord:kord-common:0.8.x-SNAPSHOT")
-	include("dev.kord:kord-gateway:0.8.x-SNAPSHOT")
-	include("dev.kord:kord-rest:0.8.x-SNAPSHOT")
-	include("io.insert-koin:koin-core-jvm:3.3.2")
-	include("io.insert-koin:koin-logger-slf4j:3.3.0")
-	include("io.ktor:ktor-client-cio-jvm:2.2.4")
-	include("io.ktor:ktor-client-content-negotiation-jvm:2.2.4")
-	include("io.ktor:ktor-client-core-jvm:2.2.4")
-	include("io.ktor:ktor-client-websockets-jvm:2.2.4")
-	include("io.ktor:ktor-events-jvm:2.2.4")
-	include("io.ktor:ktor-http-cio-jvm:2.2.4")
-	include("io.ktor:ktor-http-jvm:2.2.4")
-	include("io.ktor:ktor-io-jvm:2.2.4")
-	include("io.ktor:ktor-network-jvm:2.2.4")
-	include("io.ktor:ktor-network-tls-jvm:2.2.4")
-	include("io.ktor:ktor-serialization-jvm:2.2.4")
-	include("io.ktor:ktor-serialization-kotlinx-json-jvm:2.2.4")
-	include("io.ktor:ktor-serialization-kotlinx-jvm:2.2.4")
-	include("io.ktor:ktor-utils-jvm:2.2.4")
-	include("io.ktor:ktor-websocket-serialization-jvm:2.2.4")
-	include("io.ktor:ktor-websockets-jvm:2.2.4")
-	include("org.pf4j:pf4j:3.8.0")
-
+	@Suppress("UnstableApiUsage") "transitiveInclude"(libs.kordex.pluralkit)
 
 	// QSL is not a complete API; You will need Quilted Fabric API to fill in the gaps.
 	// Quilted Fabric API will automatically pull in the correct QSL version.
@@ -86,6 +62,29 @@ dependencies {
 	// modImplementation(libs.bundles.qfapi) // If you wish to use the deprecated Fabric API modules
 
 	modImplementation(libs.qkl)
+}
+
+val includeBlacklist = setOf<String>(
+)
+
+afterEvaluate {
+	val ignoredModules = mutableSetOf<String>()
+	val mavenCoords = configurations.getByName("transitiveInclude").incoming.resolutionResult.allComponents.filter {
+		it.id is ModuleComponentIdentifier
+	}.map {
+		it.id as ModuleComponentIdentifier
+	}
+
+	mavenCoords.forEach {
+		if (it.module.endsWith("-jvm")) {
+			ignoredModules.add("${it.group}:${it.module.substring(0, it.module.length - 4)}")
+		}
+	}
+
+	mavenCoords.filter { !ignoredModules.contains("${it.group}:${it.module}") }
+		.map { "${it.group}:${it.module}:${it.version}" }
+		.filter { !includeBlacklist.contains(it) }
+		.forEach { project.dependencies.include(it) }
 }
 
 tasks {
