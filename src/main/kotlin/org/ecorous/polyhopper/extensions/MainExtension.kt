@@ -87,7 +87,11 @@ class MainExtension : Extension() {
                 var stringBuilder = StringBuilder()
                 val playerManager = PolyHopper.server!!.playerManager
                 for (entity in playerManager.playerList) {
-                    stringBuilder.append(entity.displayName.string)
+                    if (stringBuilder.toString() != "") {
+                        stringBuilder.append("\n" + entity.displayName.string)
+                    } else {
+                        stringBuilder.append(entity.displayName.string)
+                    }
                 }
                 respond {
                     embed {
