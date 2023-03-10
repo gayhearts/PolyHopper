@@ -8,13 +8,8 @@ import net.minecraft.text.Style
 import net.minecraft.text.Text
 import org.ecorous.polyhopper.HopperBot.sendEmbed
 import org.ecorous.polyhopper.HopperBot.sendMinecraftMessage
-import java.lang.StringBuilder
-import java.util.Optional
-import java.util.Random
 
-// Likely temporary, just somewhere to put partial implementations whilst other things are waiting to be worked on e.g. discord bot.
 object MessageHooks {
-    private const val OBFUSCATION_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890"
 
     fun onPlayerDeath(player: ServerPlayerEntity, message: Text) {
         if (PolyHopper.CONFIG.bot.announceDeaths) {
@@ -30,7 +25,7 @@ object MessageHooks {
             sendEmbed {
                 title = message.string
                 color = DISCORD_GREEN
-                description = minecraftTextToDiscordMessage(advancementDescription)
+                description = Utils.minecraftTextToDiscordMessage(advancementDescription)
             }
         }
     }
@@ -75,7 +70,7 @@ object MessageHooks {
 
     fun onTellRaw(player: ServerPlayerEntity?, message: Text) {
         sendEmbed {
-            title = minecraftTextToDiscordMessage(message) // we don't want to say who did it!
+            title = Utils.minecraftTextToDiscordMessage(message) // we don't want to say who did it!
             color = DISCORD_BLURPLE
         }
     }
@@ -92,41 +87,5 @@ object MessageHooks {
             title = "Server stopped!"
             color = DISCORD_RED
         }
-    }
-
-    fun discordMessageToMinecraftText(message: String) : Text {
-        TODO()
-    }
-
-    fun minecraftTextToDiscordMessage(message: Text) : String {
-        val builder = StringBuilder()
-        message.visit({ style, text ->
-            if (style.isUnderlined) builder.append("__")
-            if (style.isBold) builder.append("**")
-            if (style.isItalic) builder.append("*")
-            if (style.isStrikethrough) builder.append("~~")
-            if (style.isObfuscated) {
-                builder.append(obfuscatedMessage(text.length)) // todo: better way to obfuscate text?
-            } else {
-                builder.append(text)
-            }
-            if (style.isStrikethrough) builder.append("~~")
-            if (style.isItalic) builder.append("*")
-            if (style.isBold) builder.append("**")
-            if (style.isUnderlined) builder.append("__")
-
-            return@visit Optional.empty<String>()
-        }, Style.EMPTY)
-
-        return builder.toString()
-    }
-
-    private fun obfuscatedMessage(length: Int) : String {
-        val random = Random()
-        var rv = ""
-        for (i in 0..length) {
-            rv += OBFUSCATION_CHARACTERS[random.nextInt(OBFUSCATION_CHARACTERS.length)]
-        }
-        return rv
     }
 }

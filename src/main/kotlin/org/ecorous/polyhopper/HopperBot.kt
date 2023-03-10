@@ -39,7 +39,7 @@ object HopperBot : CoroutineScope {
 
     fun sendMinecraftMessage(displayName: String, uuid: String, username: String, text: Text)
     {
-        sendMessage(MessageHooks.minecraftTextToDiscordMessage(text), username, uuid, displayName)
+        sendMessage(Utils.minecraftTextToDiscordMessage(text), username, uuid, displayName)
     }
 
     fun sendEmbed(username: String = "Server", body: EmbedBuilder.() -> Unit) {
