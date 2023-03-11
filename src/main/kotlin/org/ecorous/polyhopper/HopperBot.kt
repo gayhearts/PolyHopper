@@ -52,6 +52,11 @@ object HopperBot : CoroutineScope {
 
     fun sendMinecraftMessage(displayName: String, uuid: String, username: String, text: Text)
     {
+        for (item in PolyHopper.CONFIG.bot.minecraftProxyBlacklist) {
+            if (Utils.minecraftTextToDiscordMessage(text).startsWith(item)) {
+                return
+            }
+        }
         sendMessage(Utils.minecraftTextToDiscordMessage(text), username, uuid, displayName)
     }
 
@@ -74,6 +79,7 @@ object HopperBot : CoroutineScope {
     }
     fun sendMessage(message: String, username: String = "", uuid: String = "", displayName: String = "", avatarUrl: String = "") {
         launch {
+
             if (PolyHopper.CONFIG.bot.messageMode == MessageMode.MESSAGE) {
                 bot.kordRef.getChannelOf<MessageChannel>(Snowflake(PolyHopper.CONFIG.bot.channelId))?.createMessage(Utils.getMessageModeMessage(username, displayName, message))
             } else if (PolyHopper.CONFIG.bot.messageMode == MessageMode.WEBHOOK) {
@@ -81,8 +87,10 @@ object HopperBot : CoroutineScope {
                     ?.let { ensureWebhook(it, Utils.getWebhookUsername("Server", "Server")) }
                 webhook!!.token?.let {
                     webhook.execute(it) {
-                        this.avatarUrl = getAvatarUrl(((username != "" || displayName != "") && uuid != ""), uuid, username)
-                        if (username != "" || displayName != "") this.username = Utils.getWebhookUsername(displayName, username)
+                        this.avatarUrl =
+                            getAvatarUrl(((username != "" || displayName != "") && uuid != ""), uuid, username)
+                        if (username != "" || displayName != "") this.username =
+                            Utils.getWebhookUsername(displayName, username)
                         content = message
                     }
                 }

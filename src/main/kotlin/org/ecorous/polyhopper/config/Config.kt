@@ -23,6 +23,9 @@ class Config : WrappedConfig() {
         @Comment("The format that discord messages use in-game")
         val ingameFormat: String = "[PolyHopper] <{username}> {message}"
 
+        @Comment("Messages that start with these won't be proxied into minecraft (<@466378653216014359> is PluralKit's ping)")
+        val minecraftProxyBlacklist = listOf<String>("pk;", "pk!", "<@466378653216014359>", "\\\\")
+
         @Comment("The channel where whitelist are logged")
         val whitelistChannelId: String = ""
 
