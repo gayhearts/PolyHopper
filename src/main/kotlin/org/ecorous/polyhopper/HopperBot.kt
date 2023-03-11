@@ -3,6 +3,7 @@ package org.ecorous.polyhopper
 import com.kotlindiscord.kord.extensions.ExtensibleBot
 import com.kotlindiscord.kord.extensions.modules.extra.pluralkit.extPluralKit
 import com.kotlindiscord.kord.extensions.utils.ensureWebhook
+import dev.kord.common.entity.PresenceStatus
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.behavior.channel.createEmbed
 import dev.kord.core.behavior.execute
@@ -13,6 +14,7 @@ import dev.kord.rest.builder.message.create.embed
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import net.minecraft.text.Text
 import org.ecorous.polyhopper.config.MessageMode
 import org.ecorous.polyhopper.extensions.MainExtension
@@ -28,8 +30,19 @@ object HopperBot : CoroutineScope {
                 extPluralKit()
                 add(::MainExtension)
             }
+            presence {
+                playing("Minecraft with ${Utils.getPlayerCount()} players!")
+            }
         }
 
+    }
+
+    fun onPlayerCountChange() {
+        runBlocking {
+            bot.kordRef.editPresence {
+                playing("Minecraft with ${Utils.getPlayerCount()} players!")
+            }
+        }
     }
 
     fun getAvatarUrl(isPlayer: Boolean, uuid: String = "", username: String = ""): String {

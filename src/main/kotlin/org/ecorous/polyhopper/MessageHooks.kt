@@ -37,6 +37,7 @@ object MessageHooks {
                 color = DISCORD_GREEN
             }
         }
+        HopperBot.onPlayerCountChange()
     }
 
     fun onPlayerDisconnected(player: ServerPlayerEntity) {
@@ -46,6 +47,7 @@ object MessageHooks {
                 color = DISCORD_RED
             }
         }
+        HopperBot.onPlayerCountChange()
     }
 
     fun onChatMessageSent(player: ServerPlayerEntity, message: Text) {

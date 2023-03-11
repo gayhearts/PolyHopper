@@ -40,12 +40,28 @@ object Utils {
 
     }
 
+
+
+    fun getMaxPlayerCount(): Int {
+        return PolyHopper.server!!.maxPlayerCount
+    }
+
+    fun getCurrentPlayerCount(): Int {
+        return PolyHopper.server!!.currentPlayerCount
+    }
+
+    fun getPlayerCount(): String {
+        return "${PolyHopper.server!!.currentPlayerCount}/${PolyHopper.server!!.maxPlayerCount}"
+    }
+
     fun discordMessageToMinecraftText(message: String) : Text {
         //TODO()
         var result: Text = Text.of(message)
         Text.of("")
         runBlocking {
-            TODO()
+            TODO(
+
+            )
             var uMPIndex = 0
             var cMPIndex = 0
             var rMPIndex = 0
