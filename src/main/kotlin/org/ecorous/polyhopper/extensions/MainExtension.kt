@@ -27,6 +27,7 @@ import net.minecraft.util.math.Vec2f
 import net.minecraft.util.math.Vec3d
 import org.ecorous.polyhopper.DiscordCommandOutput
 import org.ecorous.polyhopper.PolyHopper
+import org.ecorous.polyhopper.Utils
 import org.ecorous.polyhopper.Utils.getInGameMessage
 import java.util.*
 
@@ -95,7 +96,7 @@ class MainExtension : Extension() {
                 }
                 respond {
                     embed {
-                        title = "List of online players (${playerManager.currentPlayerCount}/${playerManager.maxPlayerCount})"
+                        title = "List of online players (${Utils.getPlayerCount()})"
                         description = stringBuilder.toString()
                     }
                 }
