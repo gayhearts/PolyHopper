@@ -5,7 +5,7 @@ import net.minecraft.text.Text
 
 class DiscordCommandOutput : CommandOutput {
     override fun sendSystemMessage(message: Text?) {
-        message?.let { MessageHooks.minecraftTextToDiscordMessage(it) }?.let { HopperBot.sendMessage(it, "Command Output", "", "Command Output") }
+        message?.let { Utils.minecraftTextToDiscordMessage(it) }?.let { HopperBot.sendMessage(it, "Command Output", "", "Command Output") }
     }
 
     override fun shouldReceiveFeedback(): Boolean {

@@ -52,11 +52,6 @@ object HopperBot : CoroutineScope {
 
     fun sendMinecraftMessage(displayName: String, uuid: String, username: String, text: Text)
     {
-        for (item in PolyHopper.CONFIG.bot.minecraftProxyBlacklist) {
-            if (Utils.minecraftTextToDiscordMessage(text).startsWith(item)) {
-                return
-            }
-        }
         sendMessage(Utils.minecraftTextToDiscordMessage(text), username, uuid, displayName)
     }
 
@@ -79,7 +74,11 @@ object HopperBot : CoroutineScope {
     }
     fun sendMessage(message: String, username: String = "", uuid: String = "", displayName: String = "", avatarUrl: String = "") {
         launch {
-
+            for (item in PolyHopper.CONFIG.bot.minecraftProxyBlacklist.stream().toList()) {
+                if (message.startsWith(item)) {
+                    return@launch
+                }
+            }
             if (PolyHopper.CONFIG.bot.messageMode == MessageMode.MESSAGE) {
                 bot.kordRef.getChannelOf<MessageChannel>(Snowflake(PolyHopper.CONFIG.bot.channelId))?.createMessage(Utils.getMessageModeMessage(username, displayName, message))
             } else if (PolyHopper.CONFIG.bot.messageMode == MessageMode.WEBHOOK) {

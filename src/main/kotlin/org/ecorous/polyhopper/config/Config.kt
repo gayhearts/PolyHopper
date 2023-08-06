@@ -1,8 +1,10 @@
 package org.ecorous.polyhopper.config
 
+import org.ecorous.polyhopper.JavaUtil
 import org.quiltmc.config.api.Config.Section
 import org.quiltmc.config.api.WrappedConfig
 import org.quiltmc.config.api.annotations.Comment
+import org.quiltmc.config.api.values.ValueList
 
 class Config : WrappedConfig() {
 
@@ -24,13 +26,16 @@ class Config : WrappedConfig() {
         val ingameFormat: String = "[PolyHopper] <{username}> {message}"
 
         @Comment("Messages that start with these won't be proxied into minecraft (<@466378653216014359> is PluralKit's ping)")
-        val minecraftProxyBlacklist = listOf<String>("pk;", "pk!", "<@466378653216014359>", "\\\\")
+        val minecraftProxyBlacklist: ValueList<String> = ValueList.create("nyaaa", "pk;", "pk!", "<@466378653216014359>", "\\\\")
 
         @Comment("The channel where whitelist are logged")
         val whitelistChannelId: String = ""
 
         @Comment("Toggle whitelist command")
         val whitelistCommand: Boolean = false
+
+        @Comment("Toggle account linking. Not yet implemented")
+        val accountLinking: Boolean = false
 
         @Comment("How to send messages, can be either:")
         @Comment("  MESSAGE - Simple discord messages.")

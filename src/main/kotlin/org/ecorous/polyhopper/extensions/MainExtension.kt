@@ -2,6 +2,7 @@ package org.ecorous.polyhopper.extensions
 
 import com.kotlindiscord.kord.extensions.commands.converters.impl.string
 import com.kotlindiscord.kord.extensions.commands.Arguments
+import com.kotlindiscord.kord.extensions.commands.converters.impl.boolean
 import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
 import com.kotlindiscord.kord.extensions.extensions.event
@@ -111,7 +112,7 @@ class MainExtension : Extension() {
                 action {
                     val server: MinecraftServer = PolyHopper.server!!
                     server.execute {
-                        val playerByUsername: Optional<GameProfile> = server.userCache.findByName(arguments.user)
+                        val playerByUsername: Optional<GameProfile> = server.userCache!!.findByName(arguments.user)
                         val playerManager = server.playerManager
                         var whitelisted = false
 
@@ -165,6 +166,11 @@ class MainExtension : Extension() {
                 }
             }
         }
+        if (PolyHopper.CONFIG.bot.accountLinking) {
+            ephemeralSlashCommand(if (PolyHopper.CONFIG.bot.whitelistCommand) ::LinkAccountWhitelistArgs else ::LinkAccountArgs) {
+
+            }
+        }
 
         // todo: Should definitely clean these up and improve implementation like converting discord message to minecraft text.
         event<ProxiedMessageCreateEvent> {
@@ -175,12 +181,13 @@ class MainExtension : Extension() {
                         // note: display name doesn't include system tag.
                         server.playerManager.broadcastSystemMessage(
                             //Text.literal("PolyHopper - <${event.pkMessage.member?.displayName ?: "???"}> ${event.message.content}"),
-                            Text.literal(event.pkMessage.member?.displayName?.let {
+                            event.pkMessage.member?.displayName?.let {
                                 getInGameMessage(event.message.content, it)
-                            }),
+                            },
                             false
                         )
                     }
+
                 }
             }
         }
@@ -193,7 +200,7 @@ class MainExtension : Extension() {
                         val server = PolyHopper.server!!
                         server.execute {
                             server.playerManager.broadcastSystemMessage(
-                                Text.literal(getInGameMessage(event.message.content, author.displayName)),
+                                getInGameMessage(event.message.content, author.displayName),
                                 false
                             )
                         }
@@ -213,6 +220,23 @@ class MainExtension : Extension() {
         val user by string {
             name = "user"
             description = "User to whitelist."
+        }
+    }
+
+    inner class LinkAccountArgs : Arguments() {
+        val mcUser by string {
+            name = "mcUser"
+            description = "Minecraft username to link with your discord account."
+        }
+    }
+    inner class LinkAccountWhitelistArgs : Arguments() {
+        val mcUser by string {
+            name = "mcUser"
+            description = "Minecraft username to link with your discord account."
+        }
+        val whitelist by boolean {
+            name = "whitelist"
+            description = "Whether to whitelist the user as well as linking"
         }
     }
 }

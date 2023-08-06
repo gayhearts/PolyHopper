@@ -7,8 +7,7 @@
     "PlayerAdvancementMixin",
     "PlayerDeathMixin",
     "PlayerJoinAndCommandMixin",
-    "PlayerLeaveAndChatMessageMixin",
-    "TellRawMixin"
+    "PlayerLeaveAndChatMessageMixin"
   ],
   "client": [
     "TitleScreenMixin"

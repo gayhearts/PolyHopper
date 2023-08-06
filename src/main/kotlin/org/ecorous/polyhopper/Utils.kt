@@ -2,44 +2,68 @@ package org.ecorous.polyhopper
 
 import dev.kord.common.entity.Snowflake
 import kotlinx.coroutines.runBlocking
-import net.minecraft.text.MutableText
 import net.minecraft.text.Style
 import net.minecraft.text.Text
-import net.minecraft.util.Formatting
-import java.lang.StringBuilder
+import org.quiltmc.qkl.library.text.buildText
 import java.util.*
-import java.util.regex.Pattern
 
 object Utils {
+
     private const val OBFUSCATION_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890"
+
+    fun writeLinkedAccounts(linkedAccounts: LinkedAccounts) {
+        PolyHopper.linkedAccountsPath.writeText(PolyHopper.gson.toJson(linkedAccounts))
+
+    }
 
     fun getWebhookUsername(displayName: String, username: String): String {
         return PolyHopper.CONFIG.webhook.nameFormat
-                                                   .replace("{displayName}", displayName)
-                                                   .replace("{username}", username)
+            .replace("{displayName}", displayName)
+            .replace("{username}", username)
     }
 
     fun getPlayerAvatarUrl(uuid: String, username: String): String {
         return PolyHopper.CONFIG.webhook.playerAvatarUrl
-                                                        .replace("{uuid}", uuid)
-                                                        .replace("{username}", username)
+            .replace("{uuid}", uuid)
+            .replace("{username}", username)
     }
 
     fun getMessageModeMessage(username: String, displayName: String, content: String): String {
         return PolyHopper.CONFIG.message.messageFormat
-                                                      .replace("{username}", username)
-                                                      .replace("{displayName}", displayName)
-                                                      .replace("{text}", content)
-    }
-
-
-    fun getInGameMessage(message: String, username: String): String {
-        return PolyHopper.CONFIG.bot.ingameFormat
             .replace("{username}", username)
-            .replace("{message}", message) // replace with `.replace("{message}", discordMessageToMinecraftText(message))` when said method is done
-
+            .replace("{displayName}", displayName)
+            .replace("{text}", content)
     }
 
+
+    fun getInGameMessage(message: String, username: String): Text {
+        val ingameFormat = PolyHopper.CONFIG.bot.ingameFormat
+
+        // Convert the Discord message to Minecraft text format
+        val messageText = discordMessageToMinecraftText(message)
+
+        // Build the final in-game message using the TextBuilder DSL
+        return buildText {
+            val usernameIndex = ingameFormat.indexOf("{username}")
+            val messageIndex = ingameFormat.indexOf("{message}")
+
+            if (usernameIndex < messageIndex) {
+                // If {username} appears before {message}
+                text.append(Text.of(ingameFormat.substring(0, usernameIndex)))
+                text.append(Text.of(username))
+                text.append(Text.of(ingameFormat.substring(usernameIndex + "{username}".length, messageIndex)))
+                text.append(messageText)
+                text.append(Text.of(ingameFormat.substring(messageIndex + "{message}".length)))
+            } else {
+                // If {message} appears before {username}
+                text.append(Text.of(ingameFormat.substring(0, messageIndex)))
+                text.append(messageText)
+                text.append(Text.of(ingameFormat.substring(messageIndex + "{message}".length, usernameIndex)))
+                text.append(Text.of(username))
+                text.append(Text.of(ingameFormat.substring(usernameIndex + "{username}".length)))
+            }
+        }
+    }
 
 
     fun getMaxPlayerCount(): Int {
@@ -51,41 +75,30 @@ object Utils {
     }
 
     fun getPlayerCount(): String {
-        return "${PolyHopper.server!!.currentPlayerCount}/${PolyHopper.server!!.maxPlayerCount}"
+        return "${PolyHopper.server!!.playerManager.currentPlayerCount}/${PolyHopper.server!!.playerManager.maxPlayerCount}"
     }
 
-    fun discordMessageToMinecraftText(message: String) : Text {
+    fun discordMessageToMinecraftText(message: String): Text {
         //TODO()
         var result: Text = Text.of(message)
-        Text.of("")
         runBlocking {
-            TODO(
-
-            )
-            var uMPIndex = 0
-            var cMPIndex = 0
-            var rMPIndex = 0
-            var eMPIndex = 0
-            var message_result = message
+            var messageResult = message
             val userMentionPattern = """(<@!?([0-9]{16,20})>)""".toRegex()
-            val channelMentionPattern = """(<#([0-9]{16,20})>)""".toRegex()
-            val roleMentionPattern = """(<@&([0-9]{16,20})>)""".toRegex()
-            val emojiMentionPattern = """(<a?:([a-zA-Z]{2,32}):[0-9]{16,20}>)""".toRegex()
-
             for (match in userMentionPattern.findAll(message)) {
-
                 var value = match.value
                 val id = Snowflake(value.replace("<@", "").replace(">", ""))
-                val username = "@" + HopperBot.bot.kordRef.getGuildOrThrow(Snowflake(PolyHopper.CONFIG.bot.guildId)).getMember(id).displayName
+                val user = HopperBot.bot.kordRef.getGuildOrThrow(Snowflake(PolyHopper.CONFIG.bot.guildId))
+                    .getMember(id)
+                val username = "@" + user.displayName
 
-                var usernameText = Text.literal(username).formatted(Formatting.GOLD) as MutableText
-                message_result = message_result.replace(match.value, "")
+                messageResult = messageResult.replace(match.value, "§6$username§r")
+                result = Text.literal(messageResult)
             }
         }
         return result
     }
 
-    fun minecraftTextToDiscordMessage(message: Text) : String {
+    fun minecraftTextToDiscordMessage(message: Text): String {
         val builder = StringBuilder()
         message.visit({ style, text ->
             if (style.isUnderlined) builder.append("__")
@@ -108,7 +121,7 @@ object Utils {
         return builder.toString()
     }
 
-    fun obfuscatedMessage(length: Int) : String {
+    fun obfuscatedMessage(length: Int): String {
         val random = Random()
         var rv = ""
         for (i in 0..length) {

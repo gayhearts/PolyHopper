@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(TellRawCommand.class)
 public class TellRawMixin {
 	@Inject(
-			method = "m_klhzfzqu(Lcom/mojang/brigadier/context/CommandContext;)I",
+			method = "lambda$register$1(Lcom/mojang/brigadier/context/CommandContext;)I",
 			at= @At(value = "CONSTANT", args = "intValue=0", ordinal = 0)
 	)
 	private static void polyhopper$register(CommandContext<ServerCommandSource> context, CallbackInfoReturnable<Integer> cir) {
