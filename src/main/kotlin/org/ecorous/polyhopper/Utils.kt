@@ -75,7 +75,7 @@ object Utils {
     }
 
     fun getPlayerCount(): String {
-        return "${PolyHopper.server!!.playerManager.currentPlayerCount} / ${PolyHopper.server!!.playerManager.maxPlayerCount}"
+        return "${PolyHopper.server!!.playerManager.currentPlayerCount}/${PolyHopper.server!!.playerManager.maxPlayerCount}"
     }
 
     fun discordMessageToMinecraftText(message: String): Text {

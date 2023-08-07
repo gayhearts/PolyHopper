@@ -1,6 +1,5 @@
 package org.ecorous.polyhopper.config
 
-import org.ecorous.polyhopper.JavaUtil
 import org.quiltmc.config.api.Config.Section
 import org.quiltmc.config.api.WrappedConfig
 import org.quiltmc.config.api.annotations.Comment
@@ -18,6 +17,9 @@ class Config : WrappedConfig() {
 
         @Comment("The channel to limit commands to and where messages are sent.")
         val channelId: String = ""
+
+        @Comment("The thread where messages are sent, can be left empty to use the channel instead of a thread.")
+        val threadId: String = ""
 
         @Comment("The guild that the bot is to be used in.")
         val guildId: String = ""
