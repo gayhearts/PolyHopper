@@ -39,9 +39,12 @@ class MainExtension : Extension() {
 
         ephemeralSlashCommand(::RunArgs) {
             guild(Snowflake(PolyHopper.CONFIG.bot.guildId))
+
             name = "run"
             description = "Run a command through the server."
+
             requirePermission(Permission.Administrator)
+
             action {
                 if (PolyHopper.server == null) {
                     respond {
@@ -62,19 +65,23 @@ class MainExtension : Extension() {
                         PolyHopper.server!!,
                         null
                     )
-                    PolyHopper.server!!.commandManager.executePrefixedCommand(source, arguments.command)
 
+                    PolyHopper.server!!.commandManager.executePrefixedCommand(source, arguments.command)
                 }
             }
         }
 
         ephemeralSlashCommand {
             guild(Snowflake(PolyHopper.CONFIG.bot.guildId))
+
             name = "stop"
             description = "Stops the server."
+
             requirePermission(Permission.Administrator)
+
             action {
                 PolyHopper.server?.stop(false)
+
                 respond {
                     content = "Server stopped."
                 }
@@ -83,22 +90,17 @@ class MainExtension : Extension() {
 
         publicSlashCommand {
             guild(Snowflake(PolyHopper.CONFIG.bot.guildId))
+
             name = "list"
             description = "Lists online players."
+
             action {
-                var stringBuilder = StringBuilder()
-                val playerManager = PolyHopper.server!!.playerManager
-                for (entity in playerManager.playerList) {
-                    if (stringBuilder.toString() != "") {
-                        stringBuilder.append("\n" + entity.displayName.string)
-                    } else {
-                        stringBuilder.append(entity.displayName.string)
-                    }
-                }
+                val players = PolyHopper.server!!.playerManager.playerList.joinToString("\n") { it.displayName.string }
+
                 respond {
                     embed {
                         title = "List of online players (${Utils.getPlayerCount()})"
-                        description = stringBuilder.toString()
+                        description = players
                     }
                 }
             }
@@ -107,10 +109,13 @@ class MainExtension : Extension() {
         if (PolyHopper.CONFIG.bot.whitelistCommand) {
             ephemeralSlashCommand(::WhitelistArgs) {
                 guild(Snowflake(PolyHopper.CONFIG.bot.guildId))
+
                 name = "whitelist"
                 description = "Whitelists a user."
+
                 action {
                     val server: MinecraftServer = PolyHopper.server!!
+
                     server.execute {
                         val playerByUsername: Optional<GameProfile> = server.userCache!!.findByName(arguments.user)
                         val playerManager = server.playerManager
@@ -118,6 +123,7 @@ class MainExtension : Extension() {
 
                         if (playerByUsername.isPresent) {
                             val gameProfile = playerByUsername.get()
+
                             if (!playerManager.whitelist.isAllowed(gameProfile)) {
                                 playerManager.whitelist.add(WhitelistEntry(gameProfile))
                                 whitelisted = true
@@ -125,24 +131,29 @@ class MainExtension : Extension() {
                         } else {
                             try {
                                 val gameProfile = GameProfile(UUID.fromString(arguments.user), null)
+
                                 if (!playerManager.whitelist.isAllowed(gameProfile)) {
                                     playerManager.whitelist.add(WhitelistEntry(gameProfile))
                                 }
+
                                 whitelisted = true
                             } catch (_: IllegalArgumentException) {
 
                             }
                         }
+
                         if (whitelisted) {
-                            if (PolyHopper.CONFIG.bot.whitelistChannelId != "") {
+                            if (PolyHopper.CONFIG.bot.whitelistChannelId.isNotEmpty()) {
                                 runBlocking {
                                     val channel = bot.kordRef.getChannelOf<MessageChannel>(Snowflake(PolyHopper.CONFIG.bot.whitelistChannelId))!!
                                     channel.createEmbed {
                                         title = "User whitelisted!"
+
                                         field {
                                             name = "Minecraft User"
                                             value = arguments.user
                                         }
+
                                         field {
                                             name = "Discord User"
                                             value = "${user.mention} (${user.id})"
@@ -150,6 +161,7 @@ class MainExtension : Extension() {
                                     }
                                 }
                             }
+
                             runBlocking {
                                 respond {
                                     content = "Whitelisted ${arguments.user}."
@@ -196,8 +208,10 @@ class MainExtension : Extension() {
             action {
                 if (event.message.channel.id == Snowflake(PolyHopper.CONFIG.bot.channelId)) {
                     val author: Member? = event.author
+
                     if (author != null && !author.isBot) {
                         val server = PolyHopper.server!!
+
                         server.execute {
                             server.playerManager.broadcastSystemMessage(
                                 getInGameMessage(event.message.content, author.displayName),
@@ -209,6 +223,7 @@ class MainExtension : Extension() {
             }
         }
     }
+
     inner class RunArgs : Arguments() {
         val command by string {
             name = "command"

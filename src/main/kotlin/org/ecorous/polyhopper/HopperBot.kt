@@ -46,7 +46,7 @@ object HopperBot : CoroutineScope {
     }
 
     fun getAvatarUrl(isPlayer: Boolean, uuid: String = "", username: String = ""): String {
-        if (isPlayer) PolyHopper.LOGGER.info(Utils.getPlayerAvatarUrl(uuid, username))
+        if (isPlayer) PolyHopper.LOGGER.debug(Utils.getPlayerAvatarUrl(uuid, username))
         return if (isPlayer) Utils.getPlayerAvatarUrl(uuid, username) else PolyHopper.CONFIG.webhook.serverAvatarUrl
     }
 
@@ -74,8 +74,8 @@ object HopperBot : CoroutineScope {
     }
     fun sendMessage(message: String, username: String = "", uuid: String = "", displayName: String = "", avatarUrl: String = "") {
         launch {
-            for (item in PolyHopper.CONFIG.bot.minecraftProxyBlacklist.stream().toList()) {
-                if (message.startsWith(item)) {
+            for (item in PolyHopper.CONFIG.bot.minecraftProxyBlacklist) {
+                if (item.isNotEmpty() && message.startsWith(item)) {
                     return@launch
                 }
             }
