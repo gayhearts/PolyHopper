@@ -30,15 +30,16 @@ object PolyHopper : ModInitializer, CoroutineScope {
             "accounts": []
         }
     """
+
     override fun onInitialize(mod: ModContainer) {
         if (CONFIG.bot.accountLinking) {
-            if (linkedAccountsPath.exists()) {
-                linkedAccounts = Gson().fromJson(linkedAccountsPath.readText(), LinkedAccounts::class.java)
-            } else {
+            if (!linkedAccountsPath.exists()) {
                 linkedAccountsPath.writeText(linkedAccountsJSON)
-                linkedAccounts = Gson().fromJson(linkedAccountsPath.readText(), LinkedAccounts::class.java)
             }
+
+            linkedAccounts = Gson().fromJson(linkedAccountsPath.readText(), LinkedAccounts::class.java)
         }
+
         ServerLifecycleEvents.READY.register {
             server = it
             runBlocking {
@@ -59,5 +60,6 @@ object PolyHopper : ModInitializer, CoroutineScope {
             if (CONFIG.bot.accountLinking) Utils.writeLinkedAccounts(linkedAccounts!!)
         }
     }
+
     override val coroutineContext = Dispatchers.Default
 }
