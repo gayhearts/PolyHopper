@@ -61,6 +61,9 @@ class Config : WrappedConfig() {
 
         @Comment("The url for server webhook image, can substitute in {uuid} or {username}.")
         val serverAvatarUrl: String = "https://cdn.ecorous.org/blackhole.png"
+
+        @Comment("Webhook URL")
+        val webhookUrl: String = ""
     }
 
     inner class MessageSection : Section {

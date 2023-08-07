@@ -32,7 +32,8 @@ val transitiveInclude: Configuration by configurations.creating
 // All the dependencies are declared at gradle/libs.version.toml and referenced with "libs.<id>"
 // See https://docs.gradle.org/current/userguide/platforms.html for information on how version catalogs work.
 dependencies {
-	minecraft(libs.minecraft)
+	implementation("io.ktor:ktor-client-logging-jvm:2.2.4")
+    minecraft(libs.minecraft)
 	mappings(
 		variantOf(libs.quilt.mappings) {
 			classifier("intermediary-v2")

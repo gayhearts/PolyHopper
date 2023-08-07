@@ -1,19 +1,19 @@
 package org.ecorous.polyhopper
 
+import com.google.gson.Gson
 import com.kotlindiscord.kord.extensions.ExtensibleBot
 import com.kotlindiscord.kord.extensions.modules.extra.pluralkit.extPluralKit
-import com.kotlindiscord.kord.extensions.utils.ensureWebhook
-import dev.kord.common.entity.PresenceStatus
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.behavior.channel.createEmbed
-import dev.kord.core.behavior.execute
 import dev.kord.core.entity.channel.MessageChannel
-import dev.kord.core.entity.channel.TextChannel
 import dev.kord.rest.builder.message.EmbedBuilder
-import dev.kord.rest.builder.message.create.embed
-import kotlinx.coroutines.launch
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.request.*
+import io.ktor.http.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import net.minecraft.text.Text
 import org.ecorous.polyhopper.config.MessageMode
@@ -22,6 +22,7 @@ import org.ecorous.polyhopper.extensions.MainExtension
 object HopperBot : CoroutineScope {
 
     lateinit var bot: ExtensibleBot
+    val gson: Gson = Gson()
 
     suspend fun init() {
         val token = PolyHopper.CONFIG.bot.token
@@ -50,8 +51,7 @@ object HopperBot : CoroutineScope {
         return if (isPlayer) Utils.getPlayerAvatarUrl(uuid, username) else PolyHopper.CONFIG.webhook.serverAvatarUrl
     }
 
-    fun sendMinecraftMessage(displayName: String, uuid: String, username: String, text: Text)
-    {
+    fun sendMinecraftMessage(displayName: String, uuid: String, username: String, text: Text) {
         sendMessage(Utils.minecraftTextToDiscordMessage(text), username, uuid, displayName)
     }
 
@@ -60,19 +60,81 @@ object HopperBot : CoroutineScope {
             if (PolyHopper.CONFIG.bot.messageMode == MessageMode.MESSAGE) {
                 bot.kordRef.getChannelOf<MessageChannel>(Snowflake(PolyHopper.CONFIG.bot.channelId))?.createEmbed(body)
             } else if (PolyHopper.CONFIG.bot.messageMode == MessageMode.WEBHOOK) {
-                var webhook = bot.kordRef.getChannelOf<TextChannel>(Snowflake(PolyHopper.CONFIG.bot.channelId))
-                    ?.let { ensureWebhook(it, Utils.getWebhookUsername("Server", "Server")) }
-                webhook!!.token?.let {
-                    webhook.execute(it) {
-                        this.avatarUrl = getAvatarUrl(false)
-                        if (username != "") this.username = Utils.getWebhookUsername(username, username)
-                        embed(body)
-                    }
+                val webhookClient = HttpClient(CIO)
+                val embed = EmbedBuilder().apply(body)
+                val request = webhookClient.request(PolyHopper.CONFIG.webhook.webhookUrl) {
+                    method = HttpMethod.Post
+                    contentType(ContentType.Application.Json)
+                    setBody(
+                        """
+                        {
+                            "content": "",
+                            "avatar_url": "${getAvatarUrl(false)}",
+                            "embeds": [
+                                {
+                                    "title": "${if (embed.title == null) "" else embed.title}",
+                                    "description": "${if (embed.description == null) "" else embed.description}",
+                                    "url": "${if (embed.url == null) "" else embed.url}",
+                                    "timestamp": "${if (embed.timestamp == null) "" else embed.timestamp}",
+                                    "color": ${if (embed.color == null) "\"\"" else embed.color.hashCode()},
+                                    "image": "${if (embed.image == null) "" else embed.image}",
+                                    "footer": "${if (embed.footer == null) "" else embed.footer!!.text}",
+                                    "thumbnail": "${if (embed.thumbnail == null) "" else embed.thumbnail!!.url}",
+                                    "fields": ${embed.fields}
+                                }
+                            ],
+                            "username": "${Utils.getWebhookUsername("Server", "Server")}"
+                        }
+                    """
+                    )
                 }
+                PolyHopper.LOGGER.info("embed: ${request.status}")
+                PolyHopper.LOGGER.info(
+                    """
+                    {
+                        "title": "${if (embed.title == null) "" else embed.title}",
+                        "description": "${if (embed.description == null) "" else embed.description}",
+                        "url": "${if (embed.url == null) "" else embed.url}",
+                        "timestamp": "${if (embed.timestamp == null) "" else embed.timestamp}",
+                        "color": ${if (embed.color == null) "\"\"" else embed.color.hashCode()},
+                        "image": "${if (embed.image == null) "" else embed.image}",
+                        "footer": "${if (embed.footer == null) "" else embed.footer!!.text}",
+                        "thumbnail": "${if (embed.thumbnail == null) "" else embed.thumbnail!!.url}",
+                        "fields": ${embed.fields}
+                    }
+                """.trimIndent()
+                )
+                PolyHopper.LOGGER.info("""
+                        {
+                            "content": "",
+                            "avatar_url": "${getAvatarUrl(false)}",
+                            "embeds": [
+                                {
+                                    "title": "${if (embed.title == null) "" else embed.title}",
+                                    "description": "${if (embed.description == null) "" else embed.description}",
+                                    "url": "${if (embed.url == null) "" else embed.url}",
+                                    "timestamp": "${if (embed.timestamp == null) "" else embed.timestamp}",
+                                    "color": ${if (embed.color == null) "\"\"" else embed.color.hashCode()},
+                                    "image": "${if (embed.image == null) "" else embed.image}",
+                                    "footer": "${if (embed.footer == null) "" else embed.footer!!.text}",
+                                    "thumbnail": "${if (embed.thumbnail == null) "" else embed.thumbnail!!.url}",
+                                    "fields": ${embed.fields}
+                                }
+                            ],
+                            "username": "${Utils.getWebhookUsername("Server", "Server")}"
+                        }
+                    """)
             }
         }
     }
-    fun sendMessage(message: String, username: String = "", uuid: String = "", displayName: String = "", avatarUrl: String = "") {
+
+    fun sendMessage(
+        message: String,
+        username: String = "",
+        uuid: String = "",
+        displayName: String = "",
+        avatarUrl: String = ""
+    ) {
         launch {
             for (item in PolyHopper.CONFIG.bot.minecraftProxyBlacklist.stream().toList()) {
                 if (message.startsWith(item)) {
@@ -80,21 +142,34 @@ object HopperBot : CoroutineScope {
                 }
             }
             if (PolyHopper.CONFIG.bot.messageMode == MessageMode.MESSAGE) {
-                bot.kordRef.getChannelOf<MessageChannel>(Snowflake(PolyHopper.CONFIG.bot.channelId))?.createMessage(Utils.getMessageModeMessage(username, displayName, message))
+                bot.kordRef.getChannelOf<MessageChannel>(Snowflake(PolyHopper.CONFIG.bot.channelId))
+                    ?.createMessage(Utils.getMessageModeMessage(username, displayName, message))
             } else if (PolyHopper.CONFIG.bot.messageMode == MessageMode.WEBHOOK) {
-                var webhook = bot.kordRef.getChannelOf<TextChannel>(Snowflake(PolyHopper.CONFIG.bot.channelId))
-                    ?.let { ensureWebhook(it, Utils.getWebhookUsername("Server", "Server")) }
-                webhook!!.token?.let {
-                    webhook.execute(it) {
-                        this.avatarUrl =
-                            getAvatarUrl(((username != "" || displayName != "") && uuid != ""), uuid, username)
-                        if (username != "" || displayName != "") this.username =
-                            Utils.getWebhookUsername(displayName, username)
-                        content = message
-                    }
+                val webhookClient = HttpClient(CIO)
+                PolyHopper.LOGGER.info((((username != "" || displayName != "") && uuid != "").toString()))
+                val request = webhookClient.request(PolyHopper.CONFIG.webhook.webhookUrl) {
+                    method = HttpMethod.Post
+                    contentType(ContentType.Application.Json)
+                    setBody(
+                        """
+                        {
+                            "avatar_url": "${
+                            getAvatarUrl(
+                                ((username != "" || displayName != "") && uuid != ""),
+                                uuid,
+                                username
+                            )
+                        }",
+                            "content": "$message",
+                            "username": "${Utils.getWebhookUsername(if (displayName == "") "Server" else displayName, if (username == "") "Server" else username)}"
+                        }
+                    """
+                    )
                 }
+                PolyHopper.LOGGER.info("sendMessage: ${request.status}")
             }
         }
     }
+
     override val coroutineContext = Dispatchers.Default
 }
