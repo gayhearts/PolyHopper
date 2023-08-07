@@ -187,7 +187,7 @@ class MainExtension : Extension() {
         // todo: Should definitely clean these up and improve implementation like converting discord message to minecraft text.
         event<ProxiedMessageCreateEvent> {
             action {
-                if (event.message.channel.id == Snowflake(PolyHopper.CONFIG.bot.channelId)) {
+                if (event.message.channel.id == Snowflake(PolyHopper.CONFIG.bot.channelId) || event.message.channel.id == Snowflake(PolyHopper.CONFIG.bot.threadId)) {
                     val server = PolyHopper.server!!
                     server.execute {
                         // note: display name doesn't include system tag.
@@ -206,7 +206,7 @@ class MainExtension : Extension() {
 
         event<UnProxiedMessageCreateEvent> {
             action {
-                if (event.message.channel.id == Snowflake(PolyHopper.CONFIG.bot.channelId)) {
+                if (event.message.channel.id == Snowflake(PolyHopper.CONFIG.bot.channelId) || event.message.channel.id == Snowflake(PolyHopper.CONFIG.bot.threadId)) {
                     val author: Member? = event.author
 
                     if (author != null && !author.isBot) {

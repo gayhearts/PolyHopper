@@ -77,7 +77,7 @@ sealed class DiscordMessageSender(val bot: ExtensibleBot, val channelId: Snowfla
         }
 
         private suspend fun usingWebhook(block: WebhookMessageCreateBuilder.() -> Unit) {
-            val webhook = bot.kordRef.getChannelOf<MessageChannel>(channelId)?.let { ensureWebhook(it, Utils.getWebhookUsername("Server", "Server")) }
+            val webhook = bot.kordRef.getChannelOf<TextChannel>(channelId)?.let { ensureWebhook(it, Utils.getWebhookUsername("Server", "Server")) }
                 ?: throw IllegalStateException("Failed to find channel with id: $channelId")
 
             webhook.execute(webhook.token!!, threadId, builder = block)
