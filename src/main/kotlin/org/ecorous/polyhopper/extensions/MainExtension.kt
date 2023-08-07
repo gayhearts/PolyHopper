@@ -3,6 +3,7 @@ package org.ecorous.polyhopper.extensions
 import com.kotlindiscord.kord.extensions.commands.converters.impl.string
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.converters.impl.boolean
+import com.kotlindiscord.kord.extensions.events.interfaces.MessageEvent
 import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
 import com.kotlindiscord.kord.extensions.extensions.event
@@ -187,7 +188,7 @@ class MainExtension : Extension() {
         // todo: Should definitely clean these up and improve implementation like converting discord message to minecraft text.
         event<ProxiedMessageCreateEvent> {
             action {
-                if (event.message.channel.id == Snowflake(PolyHopper.CONFIG.bot.channelId) || event.message.channel.id == Snowflake(PolyHopper.CONFIG.bot.threadId)) {
+                if (shouldSendMessageToMinecraft(event)) {
                     val server = PolyHopper.server!!
                     server.execute {
                         // note: display name doesn't include system tag.
@@ -206,7 +207,7 @@ class MainExtension : Extension() {
 
         event<UnProxiedMessageCreateEvent> {
             action {
-                if (event.message.channel.id == Snowflake(PolyHopper.CONFIG.bot.channelId) || event.message.channel.id == Snowflake(PolyHopper.CONFIG.bot.threadId)) {
+                if (shouldSendMessageToMinecraft(event)) {
                     val author: Member? = event.author
 
                     if (author != null && !author.isBot) {
@@ -222,6 +223,12 @@ class MainExtension : Extension() {
                 }
             }
         }
+    }
+
+    private fun shouldSendMessageToMinecraft(event: MessageEvent): Boolean {
+        val id = PolyHopper.CONFIG.bot.threadId.let { if (it.isNotEmpty()) Snowflake(it) else null } ?: Snowflake(PolyHopper.CONFIG.bot.channelId)
+
+        return event.message?.channelId == id
     }
 
     inner class RunArgs : Arguments() {
