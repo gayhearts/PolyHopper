@@ -8,6 +8,7 @@ import eu.pb4.placeholders.api.parsers.TextParserV1
 import kotlinx.coroutines.runBlocking
 import net.minecraft.text.Style
 import net.minecraft.text.Text
+import org.ecorous.polyhopper.helpers.ChatCommandContext
 import org.quiltmc.qkl.library.text.buildText
 import java.util.*
 
@@ -19,28 +20,13 @@ object Utils {
 
     fun writeLinkedAccounts(linkedAccounts: LinkedAccounts) {
         PolyHopper.linkedAccountsPath.writeText(PolyHopper.gson.toJson(linkedAccounts))
-
     }
 
-    fun getWebhookUsername(displayName: String, username: String): String {
+    fun getWebhookUsername(context: ChatCommandContext): String {
         return PolyHopper.CONFIG.webhook.nameFormat
-            .replace("{displayName}", displayName)
-            .replace("{username}", username)
+            .replace("{displayName}", context.displayName)
+            .replace("{username}", context.username)
     }
-
-    fun getPlayerAvatarUrl(uuid: String, username: String): String {
-        return PolyHopper.CONFIG.webhook.playerAvatarUrl
-            .replace("{uuid}", uuid)
-            .replace("{username}", username)
-    }
-
-    fun getMessageModeMessage(username: String, displayName: String, content: String): String {
-        return PolyHopper.CONFIG.message.messageFormat
-            .replace("{username}", username)
-            .replace("{displayName}", displayName)
-            .replace("{text}", content)
-    }
-
 
     fun getInGameMessage(message: String, username: String): Text {
         val ingameFormat = PolyHopper.CONFIG.bot.ingameFormat
@@ -71,15 +57,6 @@ object Utils {
         }
     }
 
-
-    fun getMaxPlayerCount(): Int {
-        return PolyHopper.server!!.maxPlayerCount
-    }
-
-    fun getCurrentPlayerCount(): Int {
-        return PolyHopper.server!!.currentPlayerCount
-    }
-
     fun getPlayerCount(): String {
         return "${PolyHopper.server!!.playerManager.currentPlayerCount}/${PolyHopper.server!!.playerManager.maxPlayerCount}"
     }
@@ -94,7 +71,7 @@ object Utils {
             val channelMentionPattern = """(<#([0-9]{16,20})>)""".toRegex()
             val emojiMentionPattern = """(<a?:([a-zA-Z]{2,32}):[0-9]{16,20}>)""".toRegex()
             for (match in userMentionPattern.findAll(message)) {
-                var value = match.value
+                val value = match.value
                 val id = Snowflake(value.replace("<@", "").replace(">", ""))
                 val user = HopperBot.bot.kordRef.getGuild(Snowflake(PolyHopper.CONFIG.bot.guildId))
                     .getMember(id)
