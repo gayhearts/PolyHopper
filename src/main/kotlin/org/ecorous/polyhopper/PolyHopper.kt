@@ -55,17 +55,21 @@ object PolyHopper : ModInitializer, CoroutineScope {
             VanillaContextFactory
         }
 
-        ServerLifecycleEvents.READY.register {
+        ServerLifecycleEvents.STARTING.register {
             server = it
 
             runBlocking {
-                HopperBot.init()
+                HopperBot.init(it)
             }
 
             launch {
                 HopperBot.bot.start()
             }
 
+            MessageHooks.onServerStarting()
+        }
+
+        ServerLifecycleEvents.READY.register {
             MessageHooks.onServerStarted()
         }
 
