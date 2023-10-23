@@ -89,6 +89,11 @@ dependencies {
 	modImplementation(libs.emoji){
 
 	}
+
+	include(libs.json)
+	modImplementation(libs.json){
+		
+	}
 }
 
 val includeBlacklist = setOf<String>(

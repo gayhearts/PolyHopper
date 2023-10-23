@@ -13,6 +13,9 @@ import org.ecorous.polyhopper.helpers.DiscordMessageSender
 import org.ecorous.polyhopper.helpers.ConsoleContext
 import org.ecorous.polyhopper.helpers.ChatCommandContext
 
+import org.json.*
+import com.vdurmont.emoji.*
+
 object HopperBot {
     lateinit var bot: ExtensibleBot
 

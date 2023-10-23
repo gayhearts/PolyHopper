@@ -33,8 +33,10 @@ object Utils {
     fun getInGameMessage(message: String, username: String): Text {
         val ingameFormat = PolyHopper.CONFIG.bot.ingameFormat
 
+		val msgString: String = EmojiParser.parseToAliases( message.toString() )
+
         // Convert the Discord message to Minecraft text format
-        val messageText = discordMessageToMinecraftText(message)
+        val messageText = discordMessageToMinecraftText(msgString)
 
         // Build the final in-game message using the TextBuilder DSL
         return buildText {
@@ -129,7 +131,7 @@ object Utils {
             return@visit Optional.empty<String>()
         }, Style.EMPTY)
 
-        return EmojiParser.parseToAliases(builder.toString());
+        return builder.toString();
     }
 
     fun obfuscatedMessage(length: Int): String {
