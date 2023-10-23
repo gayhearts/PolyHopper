@@ -66,17 +66,17 @@ object PolyHopper : ModInitializer, CoroutineScope {
                 HopperBot.bot.start()
             }
 
-            MessageHooks.onServerStarting()
+            if (CONFIG.bot.announceServerState) MessageHooks.onServerStarting()
         }
 
         ServerLifecycleEvents.READY.register {
-            MessageHooks.onServerStarted()
+            if (CONFIG.bot.announceServerState) MessageHooks.onServerStarted()
         }
 
         ServerLifecycleEvents.STOPPING.register {
             server = null
 
-            MessageHooks.onServerShutdown()
+            if (CONFIG.bot.announceServerState) MessageHooks.onServerShutdown()
 
             runBlocking {
                 HopperBot.bot.stop()

@@ -52,7 +52,11 @@ class Config : WrappedConfig() {
 
         @Comment("Announce player join/leave?")
         val announcePlayerJoinLeave = true
-    }
+		
+		@Comment("Announce server starting/stopping")
+		val announceServerState = true
+
+	}
 
     inner class WebhookSection : Section {
         @Comment("The name used for webhook messages, can substitute in {username} or {displayName}")
