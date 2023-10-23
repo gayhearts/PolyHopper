@@ -24,6 +24,7 @@ repositories {
 	// for more information about repositories.
 	maven("https://oss.sonatype.org/content/repositories/snapshots")
 	maven("https://s01.oss.sonatype.org/content/repositories/snapshots")
+	maven("https://repo1.maven.org/maven2/")
 	repositories {
 		exclusiveContent {
 			forRepository {
@@ -37,6 +38,7 @@ repositories {
 			}
 		}
 	}
+
 	maven("https://maven.nucleoid.xyz/") { name = "Nucleoid" }
 }
 
@@ -81,6 +83,11 @@ dependencies {
 	include(libs.placeholder.api)
 	modImplementation(libs.placeholder.api) {
 		exclude(group = "net.fabricmc")
+	}
+
+	include(libs.emoji)
+	modImplementation(libs.emoji){
+
 	}
 }
 

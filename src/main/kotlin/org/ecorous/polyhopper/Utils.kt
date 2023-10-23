@@ -12,6 +12,8 @@ import org.ecorous.polyhopper.helpers.ChatCommandContext
 import org.quiltmc.qkl.library.text.buildText
 import java.util.*
 
+import com.vdurmont.emoji.*
+
 object Utils {
 
     private const val OBFUSCATION_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890"
@@ -70,6 +72,7 @@ object Utils {
             val userMentionPattern = """(<@!?([0-9]{16,20})>)""".toRegex()
             val channelMentionPattern = """(<#([0-9]{16,20})>)""".toRegex()
             val emojiMentionPattern = """(<a?:([a-zA-Z]{2,32}):[0-9]{16,20}>)""".toRegex()
+
             for (match in userMentionPattern.findAll(message)) {
                 val value = match.value
                 val id = Snowflake(value.replace("<@", "").replace(">", ""))
@@ -79,6 +82,7 @@ object Utils {
 
                 messageResult = messageResult.replace(value, "<gold><hover:show_text:'$id'>$username</hover></gold>")
             }
+
             for (match in channelMentionPattern.findAll(message)) {
                 val value = match.value
                 val id = Snowflake(value.replace("<#", "").replace(">", ""))
@@ -93,11 +97,13 @@ object Utils {
                 messageResult =
                     messageResult.replace(value, "t<gold><hover:show_text:'$hoverText'>#$channelName</hover></gold>".trimIndent().trim())
             }
+
             for (match in emojiMentionPattern.findAll(message)) {
                 val name = match.value.substringAfter(":").substringBefore(":")
                 val id = match.value.substringAfterLast(":").replace(">", "")
                 messageResult = messageResult.replace(match.value, "<gold><hover:show_text:'$id'>:$name:</hover></gold>")
             }
+
             result = PARSER.parseText(messageResult, PARSER_CONTEXT)
         }
         return result
@@ -123,7 +129,7 @@ object Utils {
             return@visit Optional.empty<String>()
         }, Style.EMPTY)
 
-        return builder.toString()
+        return EmojiParser.parseToAliases(builder.toString());
     }
 
     fun obfuscatedMessage(length: Int): String {

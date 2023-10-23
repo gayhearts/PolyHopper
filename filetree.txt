@@ -1,0 +1,61 @@
+.
+├── build.gradle.kts
+├── filetree.txt
+├── gradle
+│   ├── libs.versions.toml
+│   └── wrapper
+│       ├── gradle-wrapper.jar
+│       └── gradle-wrapper.properties
+├── gradle.properties
+├── gradlew
+├── gradlew.bat
+├── LICENSE.md
+├── README.md
+├── settings.gradle.kts
+└── src
+    └── main
+        ├── java
+        │   └── org
+        │       └── ecorous
+        │           └── polyhopper
+        │               ├── JavaUtil.java
+        │               ├── mixin
+        │               │   ├── FabricTailorWackCompatMixin.java
+        │               │   ├── PlayerAdvancementMixin.java
+        │               │   ├── PlayerDeathMixin.java
+        │               │   ├── PlayerJoinAndCommandMixin.java
+        │               │   ├── PlayerLeaveAndChatMessageMixin.java
+        │               │   └── TellRawMixin.java
+        │               └── PolyHopperMixinPlugin.java
+        ├── kotlin	# discord-end chat bridge bot?
+        │   └── org
+        │       └── ecorous
+        │           └── polyhopper
+        │               ├── compat
+        │               │   └── fabrictailor
+        │               │       ├── FabricTailorContextFactory.kt
+        │               │       └── SkinHolder.kt
+        │               ├── config
+        │               │   ├── Config.kt
+        │               │   └── MessageMode.kt
+        │               ├── DiscordCommandOutput.kt
+        │               ├── extensions
+        │               │   └── MainExtension.kt
+        │               ├── helpers
+        │               │   ├── ChatCommandContextFactory.kt
+        │               │   ├── ChatCommandContext.kt
+        │               │   ├── DiscordMessageSender.kt
+        │               │   └── VanillaContextFactory.kt
+        │               ├── HopperBot.kt
+        │               ├── LinkedAccounts.kt
+        │               ├── MessageHooks.kt
+        │               ├── PolyHopper.kt
+        │               └── Utils.kt
+        └── resources
+            ├── assets
+            │   └── polyhopper
+            │       └── icon.png
+            ├── polyhopper.mixins.json
+            └── quilt.mod.json
+
+22 directories, 37 files

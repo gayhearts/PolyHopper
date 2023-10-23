@@ -25,6 +25,9 @@ quilt_mappings = { module = "org.quiltmc:quilt-mappings", version.ref = "mapping
 fabric_tailor = { group = "maven.modrinth", name = "fabrictailor", version = "2.1.2" }
 placeholder_api = { module = "eu.pb4:placeholder-api", version.ref="placeholder_api"}
 
+emoji = { module = "com.vdurmont:emoji-java", version = "5.1.1"}
+	
+
 [bundles]
 quilted_fabric_api = ["qfapi", "qfapi_deprecated"]
 
