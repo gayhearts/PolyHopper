@@ -33,7 +33,9 @@ object Utils {
     fun getInGameMessage(message: String, username: String): Text {
         val ingameFormat = PolyHopper.CONFIG.bot.ingameFormat
 
+		// Parse message contents & username to convert emoji to their :CLDR: name.
 		val msgString: String = EmojiParser.parseToAliases( message.toString() )
+		val userString: String = EmojiParser.parseToAliases( username.toString() )
 
         // Convert the Discord message to Minecraft text format
         val messageText = discordMessageToMinecraftText(msgString)
@@ -46,7 +48,7 @@ object Utils {
             if (usernameIndex < messageIndex) {
                 // If {username} appears before {message}
                 text.append(Text.of(ingameFormat.substring(0, usernameIndex)))
-                text.append(Text.of(username))
+                text.append(Text.of(userString))
                 text.append(Text.of(ingameFormat.substring(usernameIndex + "{username}".length, messageIndex)))
                 text.append(messageText)
                 text.append(Text.of(ingameFormat.substring(messageIndex + "{message}".length)))
@@ -55,7 +57,7 @@ object Utils {
                 text.append(Text.of(ingameFormat.substring(0, messageIndex)))
                 text.append(messageText)
                 text.append(Text.of(ingameFormat.substring(messageIndex + "{message}".length, usernameIndex)))
-                text.append(Text.of(username))
+                text.append(Text.of(userString))
                 text.append(Text.of(ingameFormat.substring(usernameIndex + "{username}".length)))
             }
         }
@@ -105,6 +107,8 @@ object Utils {
                 val id = match.value.substringAfterLast(":").replace(">", "")
                 messageResult = messageResult.replace(match.value, "<gold><hover:show_text:'$id'>:$name:</hover></gold>")
             }
+
+			messageResult = EmojiParser.parseToAliases( messageResult )
 
             result = PARSER.parseText(messageResult, PARSER_CONTEXT)
         }

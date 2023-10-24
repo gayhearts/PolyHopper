@@ -27,7 +27,10 @@ placeholder_api = { module = "eu.pb4:placeholder-api", version.ref="placeholder_
 
 json  = { module = "org.json:json", version = "20231013" }
 emoji = { module = "com.vdurmont:emoji-java", version = "5.1.1"}
-	
+
+extra-pluralkit = { module = "com.kotlindiscord.kord.extensions:extra-pluralkit" , version = "1.5.6" }
+kord-extensions = { module = "com.kotlindiscord.kord.extensions:kord-extensions" , version = "1.5.6" }
+token-parser = { module = "com.kotlindiscord.kord.extensions:token-parser", version = "1.5.6" }
 
 [bundles]
 quilted_fabric_api = ["qfapi", "qfapi_deprecated"]

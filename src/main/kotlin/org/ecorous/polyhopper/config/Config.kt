@@ -53,8 +53,11 @@ class Config : WrappedConfig() {
         @Comment("Announce player join/leave?")
         val announcePlayerJoinLeave = true
 		
-		@Comment("Announce server starting/stopping")
+		@Comment("Announce server starting/stopping?")
 		val announceServerState = true
+
+		@Comment("Convert emoji to :CLDR: name?")
+		val emojiToCLDR = true
 
 	}
 
